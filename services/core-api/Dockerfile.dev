@@ -1,0 +1,9 @@
+ARG NODE_VERSION=24.11.1
+FROM node:${NODE_VERSION}-alpine
+WORKDIR /app
+COPY package*.json ./
+# Ensures tools like nodemon are safely installed for live-reloading
+RUN npm install 
+COPY . .
+EXPOSE 3001
+CMD ["npm", "run", "dev"]

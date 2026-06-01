@@ -1,0 +1,9 @@
+ARG NODE_VERSION=24.11.1
+FROM node:${NODE_VERSION}-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3002
+# Vite requires --host to bind safely inside Docker containers
+CMD ["npm", "run", "dev", "--", "--port", "3002", "--host"]

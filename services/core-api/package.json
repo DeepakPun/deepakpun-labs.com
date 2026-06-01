@@ -1,0 +1,29 @@
+{
+  "name": "api",
+  "version": "1.0.0",
+  "description": "api for our frontend",
+  "keywords": [
+    "node",
+    "express",
+    "api",
+    "devops",
+    "micro",
+    "services",
+    "fullstack"
+  ],
+  "license": "MIT",
+  "author": "Deepak Pun",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "npm test",
+    "dev": "node --watch server.js",
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@dotenvx/dotenvx": "^1.69.2",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "mongoose": "^9.6.3"
+  }
+}

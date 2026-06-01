@@ -1,0 +1,49 @@
+services:
+  client:
+    build:
+      context: ./services/client
+      dockerfile: Dockerfile.dev
+    ports:
+      - '${CLIENT_PORT}:${CLIENT_PORT}'
+    volumes:
+      - ./services/client:/app
+      - /app/.next
+      - /app/node_modules
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - WATCHPACK_POLLING=true # Forces Next.js to reliably listen to file saves inside Docker
+
+  core-api:
+    build:
+      context: ./services/core-api
+      dockerfile: Dockerfile.dev
+    ports:
+      - '${API_PORT}:${API_PORT}'
+    volumes:
+      - ./services/core-api:/app
+      - /app/node_modules
+    env_file:
+      - .env
+
+  docs:
+    build:
+      context: ./services/docs
+      dockerfile: Dockerfile.dev
+    ports:
+      - '${DOCS_PORT}:${DOCS_PORT}'
+    volumes:
+      - ./services/docs:/app
+      - /app/node_modules
+    environment:
+      - WATCHPACK_POLLING=true
+    command: npm run dev -- --port 3002 --host
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:

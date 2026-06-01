@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Next.js build output
+.next/
+out/
+
+# Production build outputs
+dist/
+build/
+
+# Environments and secrets
+.env
+.env.local
+.env.production
+*.pem
+
+# Docker and OS logs
+npm-debug.log*
+yarn-error.log*
+.DS_Store
+# shell scripts
+*.sh

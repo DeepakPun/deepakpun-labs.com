@@ -1,0 +1,31 @@
+{
+  // 1. Turn off auto-save completely
+  "files.autoSave": "off",
+
+  // 2. Enable formatting only when you manually save (Ctrl+S / Cmd+S)
+  "editor.formatOnSave": true,
+
+  // 3. Set Prettier as the default formatter for your web tech stack
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  // 4. Global Prettier configuration to enforce NO semicolons
+  "prettier.semi": false,
+
+  // 5. Language-specific overrides to guarantee formatting rules stick
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  }
+}
