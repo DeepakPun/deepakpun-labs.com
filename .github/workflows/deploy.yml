@@ -32,6 +32,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      # 1. Build & Push Client
       - name: Build and Push Client Image
         uses: docker/build-push-action@v5
         with:
@@ -40,9 +41,8 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-client:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-client:sha-${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
+      # 2. Build & Push Core API
       - name: Build and Push Core API Image
         uses: docker/build-push-action@v5
         with:
@@ -51,9 +51,8 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-core-api:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-core-api:sha-${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
+      # 3. Build & Push Docs
       - name: Build and Push Docs Image
         uses: docker/build-push-action@v5
         with:
@@ -62,8 +61,6 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-docs:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-docs:sha-${{ github.sha }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
 
   deploy-to-droplet:
     needs: build-and-push
