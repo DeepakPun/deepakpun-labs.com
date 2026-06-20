@@ -23,8 +23,8 @@ Ensure you have [Docker Desktop](https://docker.com) installed on your machine.
 ### 1. Clone & Initialize
 
 ```bash
-git clone https://github.com
-cd deepakpun-labs
+git clone https://github.com/DeepakPun/deepakpun-labs.com
+cd deepakpun-labs.com
 ```
 
 ### 2. Start the Stack
