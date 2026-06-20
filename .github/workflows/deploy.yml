@@ -78,10 +78,10 @@ jobs:
           source: 'compose.yaml,run.sh,nginx.conf'
           target: '~/portfolio'
           overwrite: true
-          timeout: 120
+          timeout: 120s
 
       - name: SSH and Trigger Production Deployment
-        uses: appleboy/ssh-action@master
+        uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.DROPLET_IP }}
           username: root
