@@ -24,7 +24,7 @@ export default function Footer() {
           </a>
           <span className='text-slate-800'>|</span>
           <a
-            href='http://localhost:3001/api/theories'
+            href='http://localhost:3001/api/v1/theories'
             className='hover:text-slate-300 transition-colors'
             target='_blank'
             rel='noopener noreferrer'

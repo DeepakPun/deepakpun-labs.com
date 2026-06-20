@@ -10,8 +10,8 @@ services:
       - /app/.next
       - /app/node_modules
     environment:
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
-      - WATCHPACK_POLLING=true # Forces Next.js to reliably listen to file saves inside Docker
+      - NEXT_PUBLIC_API_BASE_URL=${NEXT_PUBLIC_API_BASE_URL}
+      - WATCHPACK_POLLING=true
 
   core-api:
     build:
@@ -19,11 +19,17 @@ services:
       dockerfile: Dockerfile.dev
     ports:
       - '${API_PORT}:${API_PORT}'
+    develop:
+      watch:
+        - action: sync+restart
+          path: ./services/core-api
+          target: /app
     volumes:
       - ./services/core-api:/app
       - /app/node_modules
     env_file:
       - .env
+    command: npm run dev
 
   docs:
     build:

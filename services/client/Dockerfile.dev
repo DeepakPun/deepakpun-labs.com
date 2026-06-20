@@ -1,6 +1,7 @@
 ARG NODE_VERSION=24.11.1
 FROM node:${NODE_VERSION}-alpine
 WORKDIR /app
+ENV NEXT_TELEMETRY_DISABLED=1
 COPY package*.json ./
 RUN npm install
 COPY . .

@@ -1,0 +1,446 @@
+openapi: 3.0.0
+info:
+  title: MCU Multiverse Labs API (Development Hub)
+  version: 1.0.0
+  description: |
+    ## **⚠ DEVELOPMENT ENVIRONMENT NOTICE**
+    This is an active local development server tracking timelines, theories, and variant coordinates.
+
+    **Testing Access Rules:**
+      * **Temporary Security Clearance:** Authentication is active. Click the **Authorize** button on the right and use the sample key below to perform CRUD operations.
+      > `multiverse_labs_test_key_a1b2c3d4_e5f6g7h8_90abcdef`
+
+      * **Content Moderation:** All submitted content is automatically scanned and filtered using the `leo-profanity` engine.
+
+      * **Data Retention:** To prevent timeline clutter, all user-created theories will be automatically pruned `24 hours` after injection OR at `admin's discretion`.
+
+servers:
+  - url: http://localhost:3001
+    description: Local Development server
+  # - url: /
+  # description: Production (relative)
+
+components:
+  securitySchemes:
+    HeaderApiKeyAuth:
+      type: apiKey
+      in: header
+      name: x-api-key
+  schemas:
+    Theory:
+      type: object
+      properties:
+        _id:
+          type: string
+        title:
+          type: string
+        targetMovie:
+          type: string
+        relatedPastMovies:
+          type: array
+          items:
+            type: string
+        content:
+          type: string
+        predictionConfidence:
+          type: integer
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    TheoryListResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+        statusCode:
+          type: integer
+        message:
+          type: string
+        theories:
+          type: array
+          items:
+            $ref: '#/components/schemas/Theory'
+    ErrorResponse:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: false
+        statusCode:
+          type: integer
+        message:
+          type: string
+
+paths:
+  /:
+    get:
+      tags: [Root]
+      summary: Welcome endpoint
+      description: Returns a basic health check and welcome message.
+      operationId: getRoot
+      security: []
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /api/v1/theories:
+    get:
+      tags: [Theories]
+      summary: Retrieve a paginated list of multiverse theories
+      description: Pulls records from the core Mongoose datastore with metadata and pagination counters.
+      operationId: listTheories
+      security: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: The target sector page log number
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Total records to return per page view
+      responses:
+        '200':
+          description: Theories retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TheoryListResponse'
+        '500':
+          description: Internal datastore error.
+    post:
+      tags: [Theories]
+      summary: Craft and inject a new theory entry
+      description: Adds a new MCU multiverse theory to the tracking matrix.
+      operationId: createTheory
+      security:
+        - HeaderApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [title, targetMovie, content]
+              properties:
+                title:
+                  type: string
+                  example: 'Cap is a Skrull'
+                targetMovie:
+                  type: string
+                  example: 'Avengers: Secret Wars'
+                relatedPastMovies:
+                  type: array
+                  items:
+                    type: string
+                  example: ['Captain America: Civil War', 'Endgame']
+                content:
+                  type: string
+                  example: 'Detailed chronological evidence stating Steve Rogers was swapped.'
+                predictionConfidence:
+                  type: integer
+                  default: 5
+                  example: 8
+      responses:
+        '201':
+          description: Theory created successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Theory'
+        '400':
+          description: Validation input error.
+        '401':
+          description: Missing or invalid x-api-key
+        '409':
+          description: Duplicate theory
+
+  /api/v1/theories/{theoryId}:
+    get:
+      tags: [Theories]
+      summary: Fetch a single theory document by its unique ID
+      description: Returns all matching schema attributes for a single record from the Mongoose datastore.
+      operationId: getTheoryById
+      security: []
+      parameters:
+        - in: path
+          name: theoryId
+          required: true
+          schema:
+            type: string
+          description: The unique hex string ID of the targeted theory record
+      responses:
+        '200':
+          description: Theory document found and retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Theory'
+        '404':
+          description: No document found matching the provided ID
+        '500':
+          description: Internal backend error
+    put:
+      tags: [Theories]
+      summary: Modify an existing timeline log entry
+      operationId: updateTheory
+      security:
+        - HeaderApiKeyAuth: []
+      parameters:
+        - in: path
+          name: theoryId
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title: { type: string }
+                targetMovie: { type: string }
+                relatedPastMovies:
+                  type: array
+                  items: { type: string }
+                content: { type: string }
+                predictionConfidence: { type: integer }
+      responses:
+        '200':
+          description: Theory modified successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Theory'
+        '400': { description: Validation error }
+        '401': { description: Missing or invalid x-api-key }
+        '404': { description: Log target not found }
+    delete:
+      tags: [Theories]
+      summary: Prune a theory item from the active database
+      operationId: deleteTheory
+      security:
+        - HeaderApiKeyAuth: []
+      parameters:
+        - in: path
+          name: theoryId
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Theory successfully pruned from timeline.
+        '401': { description: Missing or invalid x-api-key }
+        '404': { description: Log target not found }
+        '500': { description: Internal server error }
+# openapi: 3.0.0
+# info:
+#   title: MCU Multiverse Labs API (Development Hub)
+#   version: 1.0.0
+#   description: |
+#     ### ⚠️ DEVELOPMENT ENVIRONMENT NOTICE
+#     This is an active local development server tracking timelines, theories, and variant coordinates.
+
+#     **Testing Access Rules:**
+#     * **Temporary Security Clearance:** Authentication is active. Click the **Authorize** button on the right and use the sample key: `multiverse_labs_secure_token_abc123` to perform CRUD operations.<br><br>
+#     * **Content Moderation:** All submitted content is automatically scanned and filtered using the `leo-profanity` engine.<br><br>
+#     * **Data Retention:** To prevent timeline clutter, all user-created theories will be automatically pruned `24 hours` after injection OR at `admin's discretion`.
+# servers:
+#   - url: http://localhost:3001
+#     description: Local Development server
+# components:
+#   securitySchemes:
+#     HeaderApiKeyAuth:
+#       type: apiKey
+#       in: header
+#       name: x-api-key
+# security:
+#   - HeaderApiKeyAuth: []
+
+# paths:
+#   /:
+#     get:
+#       tags:
+#         - Root Endpoint
+#       summary: Welcome endpoint
+#       description: Returns a basic health check and welcome message.
+#       responses:
+#         '200':
+#           description: Successful response
+#           content:
+#             application/json:
+#               schema:
+#                 type: object
+
+#   /api/v1/theories:
+#     get:
+#       tags:
+#         - Theories Core API Endpoints
+#       summary: Retrieve a paginated list of multiverse theories
+#       description: Pulls records from the core Mongoose datastore with metadata and pagination counters.
+#       parameters:
+#         - in: query
+#           name: page
+#           schema:
+#             type: integer
+#             default: 1
+#           description: The target sector page log number
+#         - in: query
+#           name: limit
+#           schema:
+#             type: integer
+#             default: 10
+#           description: Total records to return per page view
+#       responses:
+#         '200':
+#           description: Theories retrieved successfully.
+#           content:
+#             application/json:
+#               schema:
+#                 type: object
+#                 properties:
+#                   success:
+#                     type: boolean
+#                   statusCode:
+#                     type: integer
+#                   message:
+#                     type: string
+#                   theories:
+#                     type: array
+#                     items:
+#                       type: object
+#         '500':
+#           description: Internal datastore error.
+
+#     post:
+#       tags:
+#         - Theories Core API Endpoints
+#       summary: Craft and inject a new theory entry
+#       description: Adds a new MCU multiverse theory to the tracking matrix.
+#       requestBody:
+#         required: true
+#         content:
+#           application/json:
+#             schema:
+#               type: object
+#               required:
+#                 - title
+#                 - targetMovie
+#                 - content
+#               properties:
+#                 title:
+#                   type: string
+#                   example: 'Cap is a Skrull'
+#                 targetMovie:
+#                   type: string
+#                   example: 'Avengers: Secret Wars'
+#                 relatedPastMovies:
+#                   type: array
+#                   items:
+#                     type: string
+#                   example: ['Captain America: Civil War', 'Endgame']
+#                 content:
+#                   type: string
+#                   example: 'Detailed chronological evidence stating Steve Rogers was swapped.'
+#                 predictionConfidence:
+#                   type: integer
+#                   default: 5
+#                   example: 8
+#       responses:
+#         '201':
+#           description: Theory created successfully.
+#         '400':
+#           description: Validation input error.
+
+#   /api/v1/theories/{theoryId}:
+#     get:
+#       tags:
+#         - Theories Core API Endpoints
+#       summary: Fetch a single theory document by its unique ID
+#       description: Returns all matching schema attributes for a single record from the Mongoose datastore.
+#       parameters:
+#         - in: path
+#           name: theoryId
+#           required: true
+#           schema:
+#             type: string
+#           description: The unique hex string ID of the targeted theory record
+#       responses:
+#         '200':
+#           description: Theory document found and retrieved successfully.
+#         '404':
+#           description: No document found matching the provided ID parameter coordinates.
+#         '500':
+#           description: Internal backend transmission or query compilation error.
+
+#     put:
+#       tags:
+#         - Theories Core API Endpoints
+#       summary: Modify an existing timeline log entry
+#       parameters:
+#         - in: path
+#           name: theoryId
+#           required: true
+#           schema:
+#             type: string
+#           description: The unique hex string ID of the targeted theory record
+#       requestBody:
+#         required: true
+#         content:
+#           application/json:
+#             schema:
+#               type: object
+#               properties:
+#                 title:
+#                   type: string
+#                 targetMovie:
+#                   type: string
+#                 relatedPastMovies:
+#                   type: array
+#                   items:
+#                     type: string
+#                 content:
+#                   type: string
+#                 predictionConfidence:
+#                   type: integer
+#       responses:
+#         '200':
+#           description: Theory modified successfully.
+#         '404':
+#           description: Log target not found.
+#         '400':
+#           description: Validation error.
+
+#     delete:
+#       tags:
+#         - Theories Core API Endpoints
+#       summary: Prune a theory item from the active database
+#       parameters:
+#         - in: path
+#           name: theoryId
+#           required: true
+#           schema:
+#             type: string
+#           description: The unique hex string ID of the targeted theory record
+#       responses:
+#         '200':
+#           description: Theory successfully pruned from timeline.
+#         '404':
+#           description: Log target not found.
+#         '500':
+#           description: Internal server error.

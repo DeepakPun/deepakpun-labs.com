@@ -1,7 +1,8 @@
+'use client'
+
 import { useEffect, useState } from 'react'
 
 const DOOMSDAY_TARGET = new Date('2026-12-17T14:45:00-05:00').getTime()
-// const DOOMSDAY_TARGET = new Date('2026-05-31T22:50:00-04:00').getTime()
 
 interface TimeLeft {
   days: number
@@ -40,7 +41,6 @@ export default function DoomsdayCountdown() {
     }
 
     calculateTimeLeft()
-
     const timer = setInterval(calculateTimeLeft, 1000)
 
     return () => clearInterval(timer)
@@ -49,26 +49,29 @@ export default function DoomsdayCountdown() {
   if (!timeLeft || timeLeft.isReleased) return null
 
   return (
-    <div className='bg-slate-900/30 border border-slate-800/80 rounded-2xl p-6 md:p-8 max-w-4xl mx-auto my-8 backdrop-blur-sm shadow-2xl relative overflow-hidden'>
-      <div className='absolute -right-10 -bottom-10 text-9xl font-black text-slate-900/10 pointer-events-none tracking-tighter uppercase font-mono select-none'>
+    <div className='bg-slate-900/30 border border-slate-900 rounded-2xl p-5 md:p-6 w-full backdrop-blur-sm shadow-2xl relative overflow-hidden'>
+      {/* BACKGROUND DECORATIVE TEXT */}
+      <div className='absolute -right-6 -bottom-8 text-7xl font-black text-slate-900/10 pointer-events-none tracking-tighter uppercase font-mono select-none hidden lg:block'>
         DOOM
       </div>
 
-      <div className='flex flex-col md:flex-row items-center justify-between gap-6 relative z-10'>
-        <div className='text-center md:text-left space-y-1.5'>
-          <div className='flex items-center justify-center md:justify-start gap-2 text-xs font-mono font-bold text-red-500 uppercase tracking-widest'>
-            <span className='h-2 w-2 rounded-full bg-red-600 animate-ping' />
+      <div className='flex flex-col xl:flex-row xl:items-center justify-between gap-5 relative z-10'>
+        {/* TEXT LOG MATRIX */}
+        <div className='text-center xl:text-left space-y-1 shrink-0'>
+          <div className='flex items-center justify-center xl:justify-start gap-2 text-[10px] font-mono font-bold text-red-500 uppercase tracking-widest'>
+            <span className='h-1.5 w-1.5 rounded-full bg-red-600 animate-pulse' />{' '}
             Temporal Convergence Warning
           </div>
-          <h3 className='text-lg md:text-xl font-bold tracking-tight text-white uppercase'>
+          <h3 className='text-sm md:text-base font-bold tracking-tight text-white uppercase font-sans'>
             Countdown to Avengers: Doomsday
           </h3>
-          <p className='text-xs text-slate-400 font-mono'>
+          <p className='text-[10px] text-slate-500 font-mono'>
             Target Reality Horizon: December 18, 2026
           </p>
         </div>
 
-        <div className='grid grid-cols-4 gap-3 md:gap-4 max-w-xs md:max-w-none w-full md:w-auto font-mono'>
+        {/* REPAIRED FLEX-1 CONTAINER SHIFT */}
+        <div className='grid grid-cols-4 gap-2 sm:gap-3 w-full xl:w-auto font-mono max-w-sm xl:max-w-none mx-auto xl:mx-0 shrink-0'>
           {[
             { value: timeLeft.days, label: 'DAYS' },
             { value: timeLeft.hours, label: 'HRS' },
@@ -77,12 +80,12 @@ export default function DoomsdayCountdown() {
           ].map((block, i) => (
             <div
               key={i}
-              className='bg-slate-950/80 border border-slate-800 rounded-xl p-3 min-w-16.25 md:min-w-20 text-center flex flex-col items-center justify-center'
+              className='bg-slate-950/80 border border-slate-900 rounded-xl py-3 px-1 text-center flex flex-col items-center justify-center min-w-[65px] sm:min-w-[75px] xl:w-[72px] transition-all'
             >
-              <span className='text-xl md:text-3xl font-black text-red-500 tracking-tight'>
+              <span className='text-xl sm:text-2xl md:text-3xl font-black text-red-500 tracking-tight block whitespace-nowrap'>
                 {String(block.value).padStart(2, '0')}
               </span>
-              <span className='text-[9px] md:text-[10px] font-bold text-slate-500 uppercase tracking-wider mt-1'>
+              <span className='text-[10px] sm:text-[10px] md:text-[11px] font-bold text-slate-600 uppercase tracking-wider mt-0.5 block whitespace-nowrap'>
                 {block.label}
               </span>
             </div>

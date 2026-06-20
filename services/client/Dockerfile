@@ -5,7 +5,7 @@ FROM node:${NODE_VERSION}-alpine AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package*.json ./
-RUN npm alpine-conf || npm ci
+RUN npm ci
 
 # Stage 2: Application builder
 FROM node:${NODE_VERSION}-alpine AS builder

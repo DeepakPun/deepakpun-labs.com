@@ -1,6 +1,24 @@
+# Local Node dependencies (Massive folder - your container will install its own via npm ci)
 node_modules
-build
-dist
+npm-debug.log
+
+# Local Git history and configuration files
+.git
+.gitignore
+.github
+
+# Environment variables containing sensitive API keys or passwords
 .env
+.env.local
+.env.development
+.env.production
+
+# Build logs and system trash
+*.log
 .DS_Store
-npm-debug.log*
+thumbs.db
+
+# Optional: Local build outputs if you build them natively on your Mac
+dist
+build
+.next

@@ -1,0 +1,53 @@
+{
+  "controlPlane": {
+    "queued": [
+      {
+        "id": "cp-q1",
+        "title": "Redis Cache Layer",
+        "service": "Express Backend",
+        "description": "Implement Redis store for high-frequency API endpoints to lower database load."
+      }
+    ],
+    "executing": [
+      {
+        "id": "cp-e1",
+        "title": "Docker Compose Overhaul",
+        "service": "DevOps & Infra",
+        "description": "Optimizing build layers, target stages, and configuring local reverse-proxy routers."
+      },
+      {
+        "id": "cp-e2",
+        "title": "JWT Token Security",
+        "service": "Express Backend",
+        "description": "Securing project workflows, setting HTTP-only cookies, and managing refresh rotations."
+      }
+    ],
+    "stable": [
+      {
+        "id": "cp-s1",
+        "title": "MongoDB Mount Volumes",
+        "service": "Database Core",
+        "description": "Configured containerized volume persistence alongside standalone replica health probes."
+      }
+    ]
+  },
+  "edgeLayer": {
+    "queued": [
+      {
+        "id": "el-q1",
+        "title": "E2E Validation Pipeline",
+        "service": "Next.js Frontend",
+        "description": "Configure Playwright integrations for automated cross-browser testing routines."
+      }
+    ],
+    "executing": [],
+    "stable": [
+      {
+        "id": "el-s1",
+        "title": "Documentation App",
+        "service": "Static Next + Tailwind",
+        "description": "Engineered high-performance static rendering workspace for live architectural tracking."
+      }
+    ]
+  }
+}

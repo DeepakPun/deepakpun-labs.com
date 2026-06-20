@@ -1,0 +1,29 @@
+services:
+  client:
+    image: pundeepak/portfolio-client:latest
+    ports:
+      - '${CLIENT_PORT}:${CLIENT_PORT}'
+    environment:
+      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+
+  core-api:
+    image: pundeepak/portfolio-core-api:latest
+    ports:
+      - '${API_PORT}:${API_PORT}'
+    env_file:
+      - .env
+
+  docs:
+    image: pundeepak/portfolio-docs:latest
+    ports:
+      - '${DOCS_PORT}:80'
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo_data:/data/db
+
+volumes:
+  mongo_data:
