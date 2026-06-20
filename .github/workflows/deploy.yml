@@ -69,13 +69,18 @@ jobs:
       - name: Checkout Source Code (for Compose files)
         uses: actions/checkout@v4
 
+      # New Step: Dynamically writes your secret contents into a real file
+      - name: Generate Production Environment File
+        run: |
+          echo "${{ secrets.PROD_ENV_FILE }}" > .env
+
       - name: Copy Deployment Files to Droplet
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.DROPLET_IP }}
           username: root
           key: ${{ secrets.DROPLET_SSH_KEY }}
-          source: 'compose.yaml,run.sh,nginx.conf'
+          source: 'compose.yaml,run.sh,nginx.conf,.env'
           target: '~/portfolio'
           overwrite: true
           timeout: 120s

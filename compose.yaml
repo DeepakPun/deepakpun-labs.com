@@ -25,5 +25,15 @@ services:
     volumes:
       - mongo_data:/data/db
 
+  nginx:
+    image: nginx:alpine-slim
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - client
+
 volumes:
   mongo_data:
