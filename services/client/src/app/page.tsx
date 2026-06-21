@@ -6,6 +6,7 @@ import DoomsdayCountdown from '@/components/DoomsdayCountdown'
 export default function Home() {
   return (
     <div className='bg-slate-950 text-slate-100 flex flex-col selection:bg-red-600 selection:text-white'>
+      <h1> This is a test </h1>
       <Hero />
 
       <main className='max-w-6xl mx-auto px-4 w-full grow grid grid-cols-1 md:grid-cols-6 gap-6 pt-2 pb-8 relative z-10 items-start'>
