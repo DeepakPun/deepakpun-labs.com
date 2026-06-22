@@ -8,11 +8,9 @@ info:
 
     **Testing Access Rules:**
       * **Temporary Security Clearance:** Authentication is active. Click the **Authorize** button on the right and use the sample key below to perform CRUD operations.
-      > `multiverse_labs_test_key_a1b2c3d4_e5f6g7h8_90abcdef`
-
+        > `multiverse_labs_test_key_a1b2c3d4_e5f6g7h8_90abcdef`
       * **Content Moderation:** All submitted content is automatically scanned and filtered using the `leo-profanity` engine.
-
-      * **Data Retention:** To prevent timeline clutter, all user-created theories will be automatically pruned `24 hours` after injection OR at `admin's discretion`.
+      * **Data Retention:** To prevent timeline clutter, this API utilizes a capped database collection. A maximum baseline of `24 theories` (or up to `1MB` of total data) is strictly preserved. Once this limit is reached, the oldest submission is automatically recycled out to accommodate new entries. Immediate manual pruning remains at `admin's discretion`.
 
 servers:
   [

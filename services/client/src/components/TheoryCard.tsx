@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+// import { useEffect, useState } from 'react'
 
 interface TheoryProps {
   theory: {
@@ -13,27 +13,27 @@ interface TheoryProps {
 }
 
 export default function TheoryCard({ theory }: TheoryProps) {
-  const [timeLeft, setTimeLeft] = useState<number>(theory.msLeft || 0)
+  // const [timeLeft, setTimeLeft] = useState<number>(theory.msLeft || 0)
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prevTime => {
-        if (prevTime <= 1000) {
-          clearInterval(timer)
-          return 0
-        }
-        return prevTime - 1000
-      })
-    }, 1000)
+  // useEffect(() => {
+  //   const timer = setInterval(() => {
+  //     setTimeLeft(prevTime => {
+  //       if (prevTime <= 1000) {
+  //         clearInterval(timer)
+  //         return 0
+  //       }
+  //       return prevTime - 1000
+  //     })
+  //   }, 1000)
 
-    return () => clearInterval(timer)
-  }, [])
+  //   return () => clearInterval(timer)
+  // }, [])
 
-  const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60))
-  const minutesLeft = Math.floor((timeLeft / (1000 * 60)) % 60)
-  const secondsLeft = Math.floor((timeLeft / 1000) % 60)
+  // const hoursLeft = Math.floor(timeLeft / (1000 * 60 * 60))
+  // const minutesLeft = Math.floor((timeLeft / (1000 * 60)) % 60)
+  // const secondsLeft = Math.floor((timeLeft / 1000) % 60)
 
-  const formatTime = (num: number) => String(num).padStart(2, '0')
+  // const formatTime = (num: number) => String(num).padStart(2, '0')
 
   // console.dir(theory)
   // console.log(`Theory ${theory._id} - Time left: ${timeLeft}ms`)
@@ -44,10 +44,10 @@ export default function TheoryCard({ theory }: TheoryProps) {
         <h3 className='text-xl md:text-2xl font-bold tracking-tight text-white'>
           {theory.title}
         </h3>
-        <span className='text-[10px] font-mono font-bold text-red-500 bg-red-950/40 border border-red-900/30 px-2 py-0.5 rounded animate-pulse'>
+        {/* <span className='text-[10px] font-mono font-bold text-red-500 bg-red-950/40 border border-red-900/30 px-2 py-0.5 rounded animate-pulse'>
           ⏳ Expires in: {formatTime(hoursLeft)}h {formatTime(minutesLeft)}m{' '}
           {formatTime(secondsLeft)}s
-        </span>
+        </span> */}
         <div className='flex items-center gap-2 bg-red-950/40 border border-red-900/60 text-red-400 px-2.5 py-1 rounded-md text-xs font-mono font-bold'>
           CONFIDENCE: {theory.predictionConfidence}/10
         </div>
