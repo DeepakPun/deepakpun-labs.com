@@ -16,6 +16,8 @@ build/
 .env.production
 *.pem
 
+additional-notes.js
+
 # Docker and OS logs
 npm-debug.log*
 yarn-error.log*
