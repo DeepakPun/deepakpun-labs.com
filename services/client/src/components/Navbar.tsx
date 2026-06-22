@@ -2,10 +2,8 @@ export default function Navbar() {
   return (
     <header className='border-b border-slate-800 bg-slate-900 backdrop-blur sticky top-0 z-50'>
       <div className='max-w-6xl mx-auto px-4 h-16 flex items-center justify-between'>
-        <a
-          href='http://localhost:3000'
-          className='flex items-center space-x-3 group outline-none'
-        >
+        {/* Changed from http://localhost:3000 to absolute root path */}
+        <a href='/' className='flex items-center space-x-3 group outline-none'>
           <span className='bg-red-600 text-white font-black px-2.5 py-1 tracking-tighter text-sm uppercase rounded group-hover:bg-red-700 transition-colors'>
             MCU
           </span>
@@ -13,19 +11,22 @@ export default function Navbar() {
             Multiverse Labs
           </span>
         </a>
+
         <div className='flex items-center space-x-4 sm:space-x-6'>
-          {/* Changed text-xs to text-sm for better mobile visibility */}
           <nav className='flex items-center space-x-3 sm:space-x-4 text-sm sm:text-xs font-mono font-medium border-r border-slate-800 pr-4 sm:pr-6'>
+            {/* Handled directly by Nginx route gateway rewrite */}
             <a
-              href='http://localhost:3002'
+              href='/api-docs'
               className='text-slate-400 hover:text-red-500 transition-colors'
               target='_blank'
               rel='noopener noreferrer'
             >
               📖 System Docs
             </a>
+
+            {/* Changed from local API port to live backend domain path */}
             <a
-              href='http://localhost:3001/api-docs'
+              href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api-docs`}
               className='text-slate-400 hover:text-red-500 transition-colors'
               target='_blank'
               rel='noopener noreferrer'
@@ -33,7 +34,7 @@ export default function Navbar() {
               ⚡ API Feed
             </a>
           </nav>
-          {/* Changed text-xs to text-sm for better mobile visibility */}
+
           <a
             href='https://deepakpun.com'
             className='text-sm sm:text-xs text-slate-400 hover:text-red-500 font-mono transition-colors inline-flex items-center gap-1'

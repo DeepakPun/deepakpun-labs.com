@@ -41,6 +41,8 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-client:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-client:sha-${{ github.sha }}
+          build-args: |
+            NEXT_PUBLIC_API_URL=https://deepakpun-labs.com
 
       # 2. Build & Push Core API
       - name: Build and Push Core API Image

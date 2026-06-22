@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic'
 import TheoriesList from '@/components/TheoriesList'
 
 export default function TheoriesPage() {

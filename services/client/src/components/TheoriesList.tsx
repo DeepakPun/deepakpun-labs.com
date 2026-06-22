@@ -46,6 +46,7 @@ export default function TheoriesList() {
 
     fetch(`${resolvedUrl}/theories?page=${page}&limit=${ITEMS_PER_PAGE}`, {
       signal,
+      cache: 'no-store',
     })
       .then(res => {
         if (!res.ok) throw new Error(`HTTP network error code: ${res.status}`)
