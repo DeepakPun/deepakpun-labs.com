@@ -15,7 +15,7 @@ export default function Footer() {
         {/* Footer Gateway Mapping Links */}
         <div className='flex items-center space-x-6 text-[11px] font-medium'>
           <a
-            href='http://localhost:3002'
+            href='/docs'
             className='hover:text-slate-300 transition-colors'
             target='_blank'
             rel='noopener noreferrer'
@@ -24,7 +24,7 @@ export default function Footer() {
           </a>
           <span className='text-slate-800'>|</span>
           <a
-            href='http://localhost:3001/api/v1/theories'
+            href='/api/v1/theories'
             className='hover:text-slate-300 transition-colors'
             target='_blank'
             rel='noopener noreferrer'

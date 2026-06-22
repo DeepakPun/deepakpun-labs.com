@@ -37,8 +37,9 @@ export default function TheoriesList() {
   const [loading, setLoading] = useState<boolean>(true)
 
   const ITEMS_PER_PAGE = 2
-  const resolvedUrl =
-    process.env.NEXT_PUBLIC_API_BASE_URL || 'http://localhost:3001/api/v1'
+  const resolvedUrl = process.env.NEXT_PUBLIC_API_URL
+    ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
+    : 'http://localhost:3001/api/v1'
 
   useEffect(() => {
     const controller = new AbortController()
