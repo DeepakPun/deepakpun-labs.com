@@ -16,7 +16,7 @@ export default function Navbar() {
           <nav className='flex items-center space-x-3 sm:space-x-4 text-sm sm:text-xs font-mono font-medium border-r border-slate-800 pr-4 sm:pr-6'>
             {/* System Docs: Points to relative route, handled by Nginx proxy routing to port 3002 */}
             <a
-              href='/api-docs'
+              href='/docs'
               className='text-slate-400 hover:text-red-500 transition-colors'
               target='_blank'
               rel='noopener noreferrer'
