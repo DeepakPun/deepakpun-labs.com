@@ -2,7 +2,7 @@ export default function Navbar() {
   return (
     <header className='border-b border-slate-800 bg-slate-900 backdrop-blur sticky top-0 z-50'>
       <div className='max-w-6xl mx-auto px-4 h-16 flex items-center justify-between'>
-        {/* Changed from http://localhost:3000 to absolute root path */}
+        {/* Main UI Root Domain Link (Port 3000 via Nginx) */}
         <a href='/' className='flex items-center space-x-3 group outline-none'>
           <span className='bg-red-600 text-white font-black px-2.5 py-1 tracking-tighter text-sm uppercase rounded group-hover:bg-red-700 transition-colors'>
             MCU
@@ -14,7 +14,7 @@ export default function Navbar() {
 
         <div className='flex items-center space-x-4 sm:space-x-6'>
           <nav className='flex items-center space-x-3 sm:space-x-4 text-sm sm:text-xs font-mono font-medium border-r border-slate-800 pr-4 sm:pr-6'>
-            {/* Handled directly by Nginx route gateway rewrite */}
+            {/* System Docs: Points to relative route, handled by Nginx proxy routing to port 3002 */}
             <a
               href='/api-docs'
               className='text-slate-400 hover:text-red-500 transition-colors'
@@ -24,7 +24,7 @@ export default function Navbar() {
               📖 System Docs
             </a>
 
-            {/* Changed from local API port to live backend domain path */}
+            {/* API Feed: Points directly to localhost:3001/api-docs locally, or your production API url */}
             <a
               href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api-docs`}
               className='text-slate-400 hover:text-red-500 transition-colors'
