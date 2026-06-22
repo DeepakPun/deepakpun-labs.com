@@ -11,8 +11,15 @@ import { globalErrorHandler } from './middleware/errorMiddleware.js'
 
 const app = express()
 
+const allowedOrigins = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'https://deepakpun-labs.com',
+  'https://www.deepakpun-labs.com',
+]
+
 const corsOptions = {
-  origin: ['http://localhost:3000', 'http://localhost:3001'],
+  origin: allowedOrigins,
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
   optionsSuccessStatus: 200,

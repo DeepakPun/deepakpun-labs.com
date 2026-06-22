@@ -15,10 +15,10 @@ info:
       * **Data Retention:** To prevent timeline clutter, all user-created theories will be automatically pruned `24 hours` after injection OR at `admin's discretion`.
 
 servers:
-  - url: http://localhost:3001
-    description: Local Development server
-  # - url: /
-  # description: Production (relative)
+  [
+    { url: 'https://deepakpun-labs.com', description: 'Production Server' },
+    { url: 'http://localhost:3001', description: 'Local Development Server' },
+  ]
 
 components:
   securitySchemes:
