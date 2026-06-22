@@ -11,18 +11,6 @@ jobs:
       - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Docker Meta Configuration
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-client
-            ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-core-api
-            ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-docs
-          tags: |
-            type=sha,format=short
-            type=raw,value=latest
-
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
@@ -38,6 +26,8 @@ jobs:
         with:
           context: ./services/client
           push: true
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/portfolio-client:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/portfolio-client:buildcache,mode=max
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-client:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-client:sha-${{ github.sha }}
@@ -50,6 +40,8 @@ jobs:
         with:
           context: ./services/core-api
           push: true
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/portfolio-core-api:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/portfolio-core-api:buildcache,mode=max
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-core-api:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-core-api:sha-${{ github.sha }}
@@ -60,6 +52,8 @@ jobs:
         with:
           context: ./services/docs
           push: true
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/portfolio-docs:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/portfolio-docs:buildcache,mode=max
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-docs:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-docs:sha-${{ github.sha }}
@@ -68,10 +62,9 @@ jobs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Source Code (for Compose files)
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      # New Step: Dynamically writes your secret contents into a real file
       - name: Generate Production Environment File
         run: |
           echo "${{ secrets.PROD_ENV_FILE }}" > .env
@@ -98,4 +91,3 @@ jobs:
             chmod +x run.sh
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             ./run.sh prod
-            docker compose exec -T nginx nginx -s reload

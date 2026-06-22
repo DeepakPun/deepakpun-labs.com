@@ -17,6 +17,7 @@ build/
 *.pem
 
 scratchpad.md
+deploy.backup.yml
 
 # Docker and OS logs
 npm-debug.log*
