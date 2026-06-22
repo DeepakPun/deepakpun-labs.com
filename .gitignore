@@ -16,7 +16,7 @@ build/
 .env.production
 *.pem
 
-additional-notes.js
+scratchpad.md
 
 # Docker and OS logs
 npm-debug.log*

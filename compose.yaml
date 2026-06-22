@@ -3,8 +3,8 @@ services:
     image: pundeepak/portfolio-client:latest
     ports:
       - '3000:3000'
-    environment:
-      - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+    # environment:
+    #   - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
   core-api:
     image: pundeepak/portfolio-core-api:latest
