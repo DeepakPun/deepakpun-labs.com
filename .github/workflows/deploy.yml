@@ -91,3 +91,4 @@ jobs:
             chmod +x run.sh
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             ./run.sh prod
+            docker compose exec -T nginx nginx -s reload
