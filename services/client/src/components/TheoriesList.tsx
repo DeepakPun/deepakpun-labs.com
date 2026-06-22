@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import TheoryCard from '@/components/TheoryCard'
+import DatabaseNotice from './DatabaseNotice'
 
 interface Theory {
   _id: string
@@ -94,6 +95,8 @@ export default function TheoriesList() {
           ← Return Home
         </Link>
       </div>
+
+      <DatabaseNotice />
 
       {loading ? (
         <div className='flex flex-col items-center justify-center py-32 space-y-4'>
