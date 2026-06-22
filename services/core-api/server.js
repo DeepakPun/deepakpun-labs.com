@@ -24,7 +24,7 @@ const corsOptions = {
   allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
   optionsSuccessStatus: 200,
 }
-app.use(cors(corsOptions))
+// app.use(cors(corsOptions))
 app.use(express.json())
 
 // --- Swagger ---
