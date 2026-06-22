@@ -26,7 +26,7 @@ export default function Navbar() {
 
             {/* API Feed: Points directly to localhost:3001/api-docs locally, or your production API url */}
             <a
-              href={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001'}/api-docs`}
+              href='/api-docs'
               className='text-slate-400 hover:text-red-500 transition-colors'
               target='_blank'
               rel='noopener noreferrer'
