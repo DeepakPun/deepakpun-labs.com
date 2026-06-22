@@ -16,19 +16,6 @@ const getAllTheories = async (req, res) => {
       Theory.countDocuments(),
     ])
 
-    const TTL_MS = THEORY_EXPIRATION_SECONDS * 1000
-    const now = Date.now()
-
-    const detailedTheories = theories.map(theory => {
-      const ageMs = now - new Date(theory.createdAt).getTime()
-      const msLeft = Math.max(0, TTL_MS - ageMs)
-
-      return {
-        ...theory.toObject(),
-        msLeft: msLeft,
-      }
-    })
-
     const totalPages = Math.ceil(totalItems / limit)
 
     return res.status(200).json({
@@ -43,7 +30,7 @@ const getAllTheories = async (req, res) => {
         hasNextPage: page < totalPages,
         hasPrevPage: page > 1,
       },
-      theories: detailedTheories,
+      theories,
     })
   } catch (error) {
     return res.status(500).json({
@@ -60,7 +47,6 @@ const getAllTheories = async (req, res) => {
 // @access Public
 const getSingleTheoryById = catchAsync(async (req, res, next) => {
   const theory = await Theory.findById(req.params.theoryId)
-  console.log(req.params.theoryId)
 
   if (!theory) {
     return next(
