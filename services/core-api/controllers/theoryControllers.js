@@ -1,4 +1,4 @@
-import Theory, { THEORY_EXPIRATION_SECONDS } from '../models/Theory.js'
+import Theory from '../models/Theory.js'
 import { catchAsync } from '../middleware/catchAsync.js'
 import ErrorHandler from '../utils/ErrorHandler.js'
 
