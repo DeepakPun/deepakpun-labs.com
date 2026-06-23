@@ -137,18 +137,18 @@ paths:
               properties:
                 title:
                   type: string
-                  example: 'Cap is a Skrull'
+                  example: 'Doom is not Stark.'
                 targetMovie:
                   type: string
-                  example: 'Avengers: Secret Wars'
+                  example: 'Avengers: Doomsday'
                 relatedPastMovies:
                   type: array
                   items:
                     type: string
-                  example: ['Captain America: Civil War', 'Endgame']
+                  example: ['Avengers: Endgame', 'Fantastic Four: First Steps']
                 content:
                   type: string
-                  example: 'Detailed chronological evidence stating Steve Rogers was swapped.'
+                  example: 'Doom shares looks with Tony Stark but is not him nor his variants. He might use the Stark look to his advantage.'
                 predictionConfidence:
                   type: integer
                   default: 5

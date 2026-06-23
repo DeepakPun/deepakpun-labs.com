@@ -125,8 +125,8 @@ export default function TheoriesList() {
           </div>
 
           <div className='space-y-6'>
-            {theories.map(theory => (
-              <TheoryCard key={theory._id} theory={theory} />
+            {theories.map((theory, index) => (
+              <TheoryCard key={theory._id} index={index} theory={theory} />
             ))}
           </div>
 
