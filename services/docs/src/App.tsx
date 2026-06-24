@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { motion } from 'framer-motion'
 import { SIDEBAR_NAV_ITEMS } from './constants/sidebarNav'
-import rawKanbanData from './constants/kanbandata.json'
+import rawKanbanData from './constants/kanbanData.json'
 
 interface KanbanItem {
   id: string
