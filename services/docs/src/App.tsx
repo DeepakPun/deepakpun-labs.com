@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from 'react'
 import ReactMarkdown from 'react-markdown'
 import { motion } from 'framer-motion'
 import { SIDEBAR_NAV_ITEMS } from './constants/sidebarNav'
-import rawKanbanData from './constants/kanbanData.json'
+import rawKanbanData from './constants/kanbandata.json'
 
 interface KanbanItem {
   id: string
@@ -33,7 +33,6 @@ export default function App() {
 
   useEffect(() => {
     let cancelled = false
-
     if (activeDoc !== 'kanban') {
       import(`./docs/${activeDoc}.md?raw`)
         .then(res => {
@@ -48,7 +47,6 @@ export default function App() {
           }
         })
     }
-
     return () => {
       cancelled = true
     }
@@ -61,61 +59,94 @@ export default function App() {
   }, [searchQuery])
 
   const renderPipelineGrid = (stages: PipelineStages) => {
+    const stageColors = {
+      queued: {
+        bg: 'bg-amber-500/10',
+        border: 'border-amber-500/30',
+        text: 'text-amber-400',
+        heading: 'text-amber-500',
+      },
+      executing: {
+        bg: 'bg-blue-500/10',
+        border: 'border-blue-500/30',
+        text: 'text-blue-400',
+        heading: 'text-blue-500',
+      },
+      stable: {
+        bg: 'bg-emerald-500/10',
+        border: 'border-emerald-500/30',
+        text: 'text-emerald-400',
+        heading: 'text-emerald-500',
+      },
+    }
+
     const StageColumn = ({
       title,
-      color,
+      type,
       items,
     }: {
       title: string
-      color: 'amber' | 'blue' | 'emerald'
+      type: 'queued' | 'executing' | 'stable'
       items: KanbanItem[]
-    }) => (
-      <div className='bg-slate-900/40 border border-slate-900 p-4 rounded-xl space-y-3 shadow-md w-full'>
-        <div className='flex items-center justify-between border-b border-slate-900/80 pb-2 mb-1'>
-          <span
-            className={`text-xs font-bold font-mono uppercase tracking-wider text-${color}-500 flex items-center gap-1.5`}
-          >
-            <span
-              className={`h-2 w-2 rounded-full bg-${color}-500 animate-pulse`}
-            />{' '}
-            {title}
-          </span>
-          <span className='bg-slate-950 text-slate-500 text- font-mono font-bold px-2 py-0.5 rounded border border-slate-900'>
-            {items.length}
-          </span>
-        </div>
-        {items.length === 0 ? (
-          <div className='text-center text- font-mono text-slate-600 py-3 border border-dashed border-slate-900 rounded-lg'>
-            Empty Stage
-          </div>
-        ) : (
-          items.map(item => (
-            <div
-              key={item.id}
-              className='bg-slate-950 border border-slate-800/60 p-3 rounded-lg space-y-2 shadow-inner'
+    }) => {
+      const colors = stageColors[type]
+
+      return (
+        <div className='bg-slate-900/40 border border-slate-800 rounded-xl p-4 flex flex-col gap-4'>
+          <div className='flex items-center justify-between border-b border-slate-800 pb-2'>
+            <h3
+              className={`font-semibold tracking-wide uppercase text-sm ${colors.heading}`}
             >
-              <div className='flex justify-between items-start gap-2'>
-                <h4 className='text-xs font-bold text-slate-200'>
-                  {item.title}
-                </h4>
-                <span className='text-[9px] font-mono bg-slate-900 border border-slate-800 px-1.5 py-0.5 rounded text-slate-400 whitespace-nowrap'>
-                  {item.service}
-                </span>
+              {title}
+            </h3>
+            <span
+              className={`text-xs px-2 py-0.5 rounded-full ${colors.bg} ${colors.text} font-medium`}
+            >
+              {items.length}
+            </span>
+          </div>
+
+          <div className='flex flex-col gap-3 overflow-y-auto max-h-150 pr-1'>
+            {items.map(item => (
+              <motion.div
+                key={item.id}
+                layoutId={item.id}
+                className={`p-4 rounded-lg border ${colors.bg} ${colors.border} flex flex-col gap-2`}
+              >
+                <div className='flex justify-between items-start gap-2'>
+                  <h4 className='font-medium text-slate-200 text-sm leading-snug'>
+                    {item.title}
+                  </h4>
+                  <span
+                    className={`text-[10px] uppercase tracking-wider px-1.5 py-0.5 rounded font-mono ${colors.text} bg-slate-950/40 border ${colors.border}`}
+                  >
+                    {item.service}
+                  </span>
+                </div>
+                <p className='text-xs text-slate-400 leading-relaxed'>
+                  {item.description}
+                </p>
+              </motion.div>
+            ))}
+            {items.length === 0 && (
+              <div className='text-center py-8 text-xs text-slate-600 border border-dashed border-slate-800/60 rounded-lg'>
+                No items in this stage
               </div>
-              <p className='text- text-slate-400 leading-relaxed'>
-                {item.description}
-              </p>
-            </div>
-          ))
-        )}
-      </div>
-    )
+            )}
+          </div>
+        </div>
+      )
+    }
 
     return (
-      <div className='grid grid-cols-1 md:grid-cols-3 gap-5 items-start w-full'>
-        <StageColumn title='Queued' color='amber' items={stages.queued} />
-        <StageColumn title='Executing' color='blue' items={stages.executing} />
-        <StageColumn title='Stable' color='emerald' items={stages.stable} />
+      <div className='grid grid-cols-1 md:grid-cols-3 gap-6 w-full'>
+        <StageColumn title='Queued' type='queued' items={stages.queued} />
+        <StageColumn
+          title='Executing'
+          type='executing'
+          items={stages.executing}
+        />
+        <StageColumn title='Stable' type='stable' items={stages.stable} />
       </div>
     )
   }

@@ -3,8 +3,6 @@ services:
     image: pundeepak/portfolio-client:latest
     ports:
       - '3000:3000'
-    # environment:
-    #   - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
 
   core-api:
     image: pundeepak/portfolio-core-api:latest
@@ -12,6 +10,8 @@ services:
       - '3001:3001'
     env_file:
       - .env
+    depends_on:
+      - mongo
 
   docs:
     image: pundeepak/portfolio-docs:latest
@@ -20,8 +20,8 @@ services:
 
   mongo:
     image: mongo:latest
-    ports:
-      - '27017:27017'
+    expose:
+      - '27017'
     volumes:
       - mongo_data:/data/db
 

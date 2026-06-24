@@ -45,7 +45,7 @@
       {
         "id": "el-s1",
         "title": "Documentation App",
-        "service": "Static Next + Tailwind",
+        "service": "Next + Tailwind",
         "description": "Engineered high-performance static rendering workspace for live architectural tracking."
       }
     ]
