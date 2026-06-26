@@ -8,7 +8,7 @@ export default function Home() {
     <div className='bg-slate-950 text-slate-100 flex flex-col selection:bg-red-600 selection:text-white'>
       {/* Active State */}
       <h1 className='text-4xl font-bold text-blue-600 text-center my-8 transition-all'>
-        CI/CD Pipeline Test: Successful Deployment!
+        CI/CD Pipeline Test: Successful Deployment! Minor changes
       </h1>
 
       {/* Commented State (Swap these to trigger your pipeline) */}
