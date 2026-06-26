@@ -37,7 +37,7 @@ export default function Hero(): JSX.Element {
           deep-dives into the future of the Marvel Cinematic Universe.
         </p>
 
-        {showAppeal && (
+        {/* {showAppeal && (
           <div className='mt-12 max-w-2xl mx-auto text-left'>
             <div className='relative border border-red-900/40 bg-slate-900/70 backdrop-blur-md rounded-xl p-5 pr-12 shadow-lg shadow-red-950/20'>
               <button
@@ -70,7 +70,7 @@ export default function Hero(): JSX.Element {
               </p>
             </div>
           </div>
-        )}
+        )} */}
       </div>
     </section>
   )
