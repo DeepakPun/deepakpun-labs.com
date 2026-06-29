@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Digital Ocean Droplet Cleanup Script
 # Comprehensive system maintenance, Docker optimization, and security scan
-# Version: 3.1 (Production-Safe for Ubuntu 22.04 + Docker Compose)
+# Version: 3.2 (Production-Safe for Ubuntu 22.04 + Docker Compose)
 
 # Colors for output
 RED='\033[0;31m'
@@ -61,7 +61,6 @@ clean_packages() {
     
     print_status "Removing orphaned packages recursively..."
     if command -v deborphan >/dev/null 2>&1; then
-        # Keep purging layers of orphans until no more are found
         while [ -n "$(deborphan)" ]; do
             sudo apt-get purge -y -qq $(deborphan) 2>/dev/null || true
         done
@@ -76,7 +75,6 @@ clean_temp_files() {
     print_status "TEMPORARY FILE CLEANUP"
     echo "----------------------------------------"
     print_status "Cleaning old items in /tmp directory (older than 7 days)..."
-    # ADDED -mindepth 1 to prevent deleting the root /tmp folder itself
     sudo find /tmp -mindepth 1 -type f -atime +7 -delete 2>/dev/null || true
     sudo find /tmp -mindepth 1 -type d -empty -delete 2>/dev/null || true
     
@@ -154,9 +152,9 @@ security_check() {
     print_status "SECURITY CHECKS"
     echo "----------------------------------------"
     
+    # Update and check chkrootkit
     if command -v chkrootkit >/dev/null 2>&1; then
         print_status " • Running chkrootkit scan..."
-        # Mute known Ruby gem and Kernel VDSO false positives
         chk_out=$(sudo chkrootkit -q 2>&1 | grep -vE "vdso/\.build-id|/usr/lib/ruby/gems")
         if [ -z "$chk_out" ]; then
             print_success "   chkrootkit: clean"
@@ -166,14 +164,12 @@ security_check() {
         fi
     fi
     
+    # Update and check rkhunter
     if command -v rkhunter >/dev/null 2>&1; then
         print_status " • Updating and running rkhunter scan..."
-        
-        # Fix the WEB_CMD "/bin/false" error by mapping it to system wget
         if [ -f /etc/rkhunter.conf ]; then
             sudo sed -i 's|WEB_CMD="/bin/false"|WEB_CMD=""|g' /etc/rkhunter.conf 2>/dev/null || true
         fi
-        
         sudo rkhunter --propupd --quiet 2>/dev/null || true
         sudo rkhunter --update --quiet 2>/dev/null || true
         rk_out=$(sudo rkhunter --check --sk --rwo 2>&1)
@@ -241,8 +237,6 @@ show_summary() {
     if [ -f /var/run/reboot-required ]; then
         print_warning "An OS patch requires a system reboot to apply completely."
         print_status "Generating deployment reboot communication trigger..."
-        # Touch a local file inside your deployed workspace target directory 
-        # so GitHub Actions step conditions know to process a safe system restart.
         touch ~/portfolio/.reboot_pending
     else
         print_success "No system reboots required for applied changes."
@@ -263,7 +257,6 @@ main() {
     print_status "Runtime: $(date)"
     echo ""
     
-    # Execute non-destructive pipeline tasks with auto-installers added
     install_dependencies
     clean_packages
     clean_temp_files
