@@ -23,5 +23,5 @@ jobs:
           script: |
             cd /root/portfolio
             # Ensure the script is executable
-            chmod +x .github/scripts/maintainance.sh
-            bash .github/scripts/maintainance.sh
+            chmod +x .github/scripts/maintenance.sh
+            bash .github/scripts/maintenance.sh
