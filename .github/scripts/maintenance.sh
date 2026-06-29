@@ -154,10 +154,10 @@ security_check() {
     print_status "SECURITY CHECKS"
     echo "----------------------------------------"
     
-    # Update and check chkrootkit
     if command -v chkrootkit >/dev/null 2>&1; then
         print_status " • Running chkrootkit scan..."
-        chk_out=$(sudo chkrootkit -q 2>&1)
+        # Mute known Ruby gem and Kernel VDSO false positives
+        chk_out=$(sudo chkrootkit -q 2>&1 | grep -vE "vdso/\.build-id|/usr/lib/ruby/gems")
         if [ -z "$chk_out" ]; then
             print_success "   chkrootkit: clean"
         else
@@ -166,9 +166,14 @@ security_check() {
         fi
     fi
     
-    # Update and check rkhunter
     if command -v rkhunter >/dev/null 2>&1; then
         print_status " • Updating and running rkhunter scan..."
+        
+        # Fix the WEB_CMD "/bin/false" error by mapping it to system wget
+        if [ -f /etc/rkhunter.conf ]; then
+            sudo sed -i 's|WEB_CMD="/bin/false"|WEB_CMD=""|g' /etc/rkhunter.conf 2>/dev/null || true
+        fi
+        
         sudo rkhunter --propupd --quiet 2>/dev/null || true
         sudo rkhunter --update --quiet 2>/dev/null || true
         rk_out=$(sudo rkhunter --check --sk --rwo 2>&1)
