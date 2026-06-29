@@ -111,11 +111,12 @@ jobs:
       - name: Wait for Droplet to come back online
         run: |
           echo "Waiting for Droplet to reboot..."
-          # Loop every 5 seconds up to 3 minutes checking if port 22 is responsive
-          for i in {1..36}; do
-            if nc -z -w 3 ${{ secrets.DROPLET_IP }} 22; then
-              echo "Droplet is back online!"
-              sleep 5 # Give SSH daemon an extra moment to stabilize
+          # Loop every 5 seconds up to 5 minutes (60 iterations)
+          for i in {1..60}; do
+            if nc -z -w 5 ${{ secrets.DROPLET_IP }} 22; then
+              echo "Droplet port 22 is open!"
+              echo "Giving the SSH daemon 25 seconds to fully initialize and accept connections..."
+              sleep 25
               exit 0
             fi
             echo "Still waiting... ($((i*5))s)"
