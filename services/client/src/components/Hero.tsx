@@ -27,7 +27,7 @@ export default function Hero(): JSX.Element {
   }
 
   return (
-    <section className='relative overflow-hidden py-20 border-b border-slate-900 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-red-950/20 via-slate-950 to-slate-950'>
+    <section className='relative overflow-hidden py-20 border-slate-900 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-red-950/20 via-slate-950 to-slate-950'>
       <div className='max-w-4xl mx-auto px-4 text-center relative z-10'>
         <h1 className='text-4xl md:text-6xl font-black tracking-tight text-white mb-6 uppercase'>
           The Ultimate <span className='text-red-500'>Timeline</span> Breakdown

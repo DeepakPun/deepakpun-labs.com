@@ -1,0 +1,27 @@
+name: Weekly Droplet Maintenance
+
+on:
+  # schedule:
+  # Runs at 03:00 AM every Sunday
+  # - cron: '0 3 * * 0'
+  # workflow_dispatch: # Allows you to manually trigger it from GitHub UI if needed
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  maintenance:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Maintenance Script on Droplet
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          # username: ${{ secrets.DROPLET_USER }}
+          username: root
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            cd /root/portfolio
+            # Ensure the script is executable
+            chmod +x .github/scripts/maintainance.sh
+            bash .github/scripts/maintainance.sh
