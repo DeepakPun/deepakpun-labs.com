@@ -76,11 +76,12 @@ clean_temp_files() {
     print_status "TEMPORARY FILE CLEANUP"
     echo "----------------------------------------"
     print_status "Cleaning old items in /tmp directory (older than 7 days)..."
-    sudo find /tmp -type f -atime +7 -delete 2>/dev/null || true
-    sudo find /tmp -type d -empty -delete 2>/dev/null || true
+    # ADDED -mindepth 1 to prevent deleting the root /tmp folder itself
+    sudo find /tmp -mindepth 1 -type f -atime +7 -delete 2>/dev/null || true
+    sudo find /tmp -mindepth 1 -type d -empty -delete 2>/dev/null || true
     
     print_status "Cleaning old items in /var/tmp directory..."
-    sudo find /var/tmp -type f -atime +7 -delete 2>/dev/null || true
+    sudo find /var/tmp -mindepth 1 -type f -atime +7 -delete 2>/dev/null || true
     
     print_status "Cleaning runtime caches..."
     rm -rf ~/.cache/thumbnails/* 2>/dev/null || true
