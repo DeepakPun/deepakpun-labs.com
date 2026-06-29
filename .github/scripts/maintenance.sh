@@ -1,8 +1,7 @@
 #!/usr/bin/env bash
-
 # Digital Ocean Droplet Cleanup Script
 # Comprehensive system maintenance, Docker optimization, and security scan
-# Version: 3.0 (Production-Safe for Ubuntu 22.04 + Docker Compose)
+# Version: 3.1 (Production-Safe for Ubuntu 22.04 + Docker Compose)
 
 # Colors for output
 RED='\033[0;31m'
@@ -33,27 +32,43 @@ check_sudo() {
     fi
 }
 
+# Function to handle missing dependencies and system packages updates
+install_dependencies() {
+    print_status "DEPENDENCY MANAGEMENT & SYSTEM PATCHES"
+    echo "----------------------------------------"
+    print_status "Updating package database cache..."
+    sudo apt-get update -qq
+    
+    print_status "Installing missing maintenance and scanner utilities..."
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y -qq deborphan chkrootkit rkhunter
+    print_success "Dependencies verified and installed."
+    
+    print_status "Applying critical OS upgrades and security patches..."
+    sudo DEBIAN_FRONTEND=noninteractive apt-get dist-upgrade -y -qq
+    print_success "System security patches applied successfully."
+}
+
 # Function to clean package cache safely
 clean_packages() {
     print_status "PACKAGE CLEANUP"
     echo "----------------------------------------"
-    print_status "Updating package lists..."
-    sudo apt update -qq
-    
     print_status "Removing unnecessary packages and old kernels..."
-    sudo apt autoremove --purge -y -qq
+    sudo apt-get autoremove --purge -y -qq
     
     print_status "Cleaning package archive cache..."
-    sudo apt autoclean -y -qq
-    sudo apt clean -y -qq
+    sudo apt-get autoclean -y -qq
+    sudo apt-get clean -y -qq
     
-    print_status "Removing orphaned packages..."
+    print_status "Removing orphaned packages recursively..."
     if command -v deborphan >/dev/null 2>&1; then
-        sudo apt remove --purge $(deborphan) -y 2>/dev/null || true
+        # Keep purging layers of orphans until no more are found
+        while [ -n "$(deborphan)" ]; do
+            sudo apt-get purge -y -qq $(deborphan) 2>/dev/null || true
+        done
+        print_success "Orphaned package purge completed."
     else
         print_warning "deborphan not installed, skipping orphan removal."
     fi
-    print_success "Package cleanup completed."
 }
 
 # Function to clean temporary files
@@ -114,7 +129,6 @@ check_disk_usage() {
     echo "----------------------------------------"
     print_status "Current disk distribution:"
     df -h /
-    
     echo ""
     print_status "Top 5 largest directories in /var:"
     sudo du -sh /var/* 2>/dev/null | sort -hr | head -5
@@ -142,7 +156,6 @@ security_check() {
     # Update and check chkrootkit
     if command -v chkrootkit >/dev/null 2>&1; then
         print_status " • Running chkrootkit scan..."
-        # captured into variable to prevent exit code triggers
         chk_out=$(sudo chkrootkit -q 2>&1)
         if [ -z "$chk_out" ]; then
             print_success "   chkrootkit: clean"
@@ -151,13 +164,12 @@ security_check() {
             echo "$chk_out" | head -n 5
         fi
     fi
-
+    
     # Update and check rkhunter
     if command -v rkhunter >/dev/null 2>&1; then
         print_status " • Updating and running rkhunter scan..."
         sudo rkhunter --propupd --quiet 2>/dev/null || true
         sudo rkhunter --update --quiet 2>/dev/null || true
-        
         rk_out=$(sudo rkhunter --check --sk --rwo 2>&1)
         if [ -z "$rk_out" ]; then
             print_success "   rkhunter: clean"
@@ -165,11 +177,11 @@ security_check() {
             print_warning "   rkhunter: Warnings identified. Inspect /var/log/rkhunter.log"
         fi
     fi
-
+    
     if ! command -v chkrootkit >/dev/null 2>&1 && ! command -v rkhunter >/dev/null 2>&1; then
-        print_warning "No rootkit scanners installed. Run: sudo apt install chkrootkit rkhunter"
+        print_warning "No rootkit scanners installed."
     fi
-
+    
     print_status " • Inspecting SSH hardening..."
     if [ -f /etc/ssh/sshd_config ]; then
         if grep -qE "^\s*PermitRootLogin\s+no" /etc/ssh/sshd_config; then
@@ -177,15 +189,15 @@ security_check() {
         else
             print_warning "   Root login may be enabled - secure your /etc/ssh/sshd_config"
         fi
+        
         if grep -qE "^\s*PasswordAuthentication\s+no" /etc/ssh/sshd_config; then
             print_success "   Password authentication disabled"
         else
             print_warning "   Password authentication may be enabled"
         fi
     fi
-
+    
     print_status " • Auditing listening system ports (Public/Private)..."
-    # Replaced netstat with modern ss utility
     sudo ss -tulpn | grep LISTEN | head -n 10
 }
 
@@ -211,7 +223,7 @@ update_locate() {
     fi
 }
 
-# Function to show final cleanup summary
+# Function to show final cleanup summary and manage reboot markers
 show_summary() {
     print_status "MAINTENANCE SUMMARY"
     echo "----------------------------------------"
@@ -222,7 +234,12 @@ show_summary() {
     
     if [ -f /var/run/reboot-required ]; then
         print_warning "An OS patch requires a system reboot to apply completely."
-        print_status "Recommended action: sudo reboot"
+        print_status "Generating deployment reboot communication trigger..."
+        # Touch a local file inside your deployed workspace target directory 
+        # so GitHub Actions step conditions know to process a safe system restart.
+        touch ~/portfolio/.reboot_pending
+    else
+        print_success "No system reboots required for applied changes."
     fi
 }
 
@@ -233,16 +250,15 @@ main() {
     echo "🧹 Digital Ocean Droplet Optimization Script"
     echo "=========================================="
     echo ""
-
     check_root
     check_sudo
-
-    print_status "System:  $(lsb_release -d 2>/dev/null | cut -f2 || echo "Ubuntu 22.04 LTS")"
-    print_status "Kernel:  $(uname -r)"
+    print_status "System: $(lsb_release -d 2>/dev/null | cut -f2 || echo "Ubuntu 22.04 LTS")"
+    print_status "Kernel: $(uname -r)"
     print_status "Runtime: $(date)"
     echo ""
-
-    # Execute non-destructive pipeline tasks
+    
+    # Execute non-destructive pipeline tasks with auto-installers added
+    install_dependencies
     clean_packages
     clean_temp_files
     clean_docker

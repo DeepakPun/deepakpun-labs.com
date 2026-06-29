@@ -80,7 +80,7 @@ jobs:
           overwrite: true
           timeout: 120s
 
-      - name: SSH and Trigger Production Deployment
+      - name: SSH, Run Maintenance, and Handle Reboot
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.DROPLET_IP }}
@@ -89,14 +89,50 @@ jobs:
           script: |
             cd ~/portfolio
 
+            # Ensure permissions are correct
             mkdir -p .github/scripts
             chmod +x run.sh
             chmod +x .github/scripts/maintenance.sh
 
-            echo "Running maintenance script ..."
+            # Remove any stale reboot markers from previous runs
+            rm -f .reboot_pending
+
+            # Execute maintenance script
             ./.github/scripts/maintenance.sh
 
-            # Docker login/pull/run on droplet
+            # If reboot is pending, schedule it 1 second out and exit cleanly to avoid GH Action crash
+            if [ -f .reboot_pending ]; then
+              echo "Reboot detected! Initiating safe server restart..."
+              rm -f .reboot_pending
+              nohup sh -c "sleep 1 && reboot" > /dev/null 2>&1 &
+              exit 0
+            fi
+
+      - name: Wait for Droplet to come back online
+        run: |
+          echo "Waiting for Droplet to reboot..."
+          # Loop every 5 seconds up to 3 minutes checking if port 22 is responsive
+          for i in {1..36}; do
+            if nc -z -w 3 ${{ secrets.DROPLET_IP }} 22; then
+              echo "Droplet is back online!"
+              sleep 5 # Give SSH daemon an extra moment to stabilize
+              exit 0
+            fi
+            echo "Still waiting... ($((i*5))s)"
+            sleep 5
+          done
+          echo "Error: Droplet timed out during reboot."
+          exit 1
+
+      - name: SSH and Trigger Production Docker Deployment
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DROPLET_IP }}
+          username: root
+          key: ${{ secrets.DROPLET_SSH_KEY }}
+          script: |
+            cd ~/portfolio
+            echo "Starting Docker containers..."
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             ./run.sh prod
             docker compose exec -T nginx nginx -s reload
