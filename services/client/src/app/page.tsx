@@ -7,18 +7,37 @@ export default function Home() {
   return (
     <div className='bg-slate-950 text-slate-100 flex flex-col selection:bg-red-600 selection:text-white'>
       {/* Active State */}
-      {/* <h1 className='text-4xl font-bold text-blue-600 text-center my-8 transition-all'>
-        CI/CD Pipeline Test: Successful Deployment! Minor changes
-      </h1> */}
-
+      {/* <h1 className='text-4xl font-bold text-blue-600 text-center my-8 transition-all'> CI/CD Pipeline Test: Successful Deployment! Minor changes </h1> */}
       {/* Commented State (Swap these to trigger your pipeline) */}
-      {/* <h1 className='text-4xl font-bold text-green-600 text-center my-8 transition-all'>
-        CI/CD Pipeline Test: Updated Build!
-      </h1> */}
+      {/* <h1 className='text-4xl font-bold text-green-600 text-center my-8 transition-all'> CI/CD Pipeline Test: Updated Build! </h1> */}
 
       <Hero />
 
+      {/* Global Alert Banner (Bootstrap Alert Style) */}
+      <div className='max-w-6xl mx-auto px-4 w-full'>
+        <div className='bg-amber-950/20 border-l-4 border-amber-500 rounded-r-xl p-4 shadow-md backdrop-blur-sm flex items-start gap-3'>
+          {/* Alert Icon Status indicator */}
+          <span className='text-amber-500 text-sm mt-0.5 shrink-0 select-none animate-pulse'>
+            ⚠️
+          </span>
+
+          {/* Alert Content */}
+          <div className='space-y-0.5'>
+            <p className='text-[10px] font-mono font-black tracking-widest text-amber-500 uppercase'>
+              Core Theory Transmission
+            </p>
+            <p className='text-xs text-slate-300 leading-relaxed font-medium'>
+              Doomsday should conclude with Doom's absolute defeat, allowing
+              Secret Wars to open pitch-black. This structural shift ensures
+              Phase 6 escapes feeling like a simple mirror replica of Infinity
+              War and Endgame.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <main className='max-w-6xl mx-auto px-4 w-full grow grid grid-cols-1 md:grid-cols-6 gap-6 pt-2 pb-8 relative z-10 items-start'>
+        {/* Left Column */}
         <div className='col-span-1 md:col-span-4 flex flex-col space-y-4 w-full justify-start'>
           <div className='w-full transform transition-all duration-300'>
             <DoomsdayCountdown />
@@ -47,7 +66,9 @@ export default function Home() {
           </div>
         </div>
 
+        {/* Right Column */}
         <div className='col-span-1 md:col-span-2 flex flex-col space-y-4 w-full h-full justify-start'>
+          {/* Card 1: Spider-Man */}
           <div className='bg-slate-900/30 border border-slate-900/90 rounded-xl p-5 flex flex-col justify-between space-y-4 relative overflow-hidden shadow-xl group backdrop-blur-sm hover:border-red-900/30 transition-all w-full'>
             <div className='space-y-2'>
               <div className='flex items-center justify-between'>
@@ -73,6 +94,7 @@ export default function Home() {
             </div>
           </div>
 
+          {/* Card 2: Secret Wars */}
           <div className='bg-slate-900/30 border border-slate-900/90 rounded-xl p-5 flex flex-col justify-between space-y-4 relative overflow-hidden shadow-xl group backdrop-blur-sm hover:border-blue-900/30 transition-all w-full'>
             <div className='space-y-2'>
               <div className='flex items-center justify-between'>

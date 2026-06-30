@@ -1,35 +1,12 @@
 'use client'
 
-import React, { useEffect, useState, type JSX, type MouseEvent } from 'react'
+import React, { type JSX } from 'react'
 
 export default function Hero(): JSX.Element {
-  const [showAppeal, setShowAppeal] = useState<boolean>(true)
-
-  useEffect((): void => {
-    try {
-      const dismissed = window.localStorage.getItem('mcu-appeal-dismissed')
-      if (dismissed === '1') {
-        setShowAppeal(false)
-      }
-    } catch {
-      // ignore if storage is blocked
-    }
-  }, [])
-
-  const dismiss = (e: MouseEvent<HTMLButtonElement>): void => {
-    e.preventDefault()
-    setShowAppeal(false)
-    try {
-      window.localStorage.setItem('mcu-appeal-dismissed', '1')
-    } catch {
-      // ignore
-    }
-  }
-
   return (
-    <section className='relative overflow-hidden py-20 border-slate-900 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-red-950/20 via-slate-950 to-slate-950'>
+    <section className='relative overflow-hidden py-10 border-slate-900 bg-[radial-gradient(ellipse_at_top,var(--tw-gradient-stops))] from-red-950/20 via-slate-950 to-slate-950'>
       <div className='max-w-4xl mx-auto px-4 text-center relative z-10'>
-        <h1 className='text-4xl md:text-6xl font-black tracking-tight text-white mb-6 uppercase'>
+        <h1 className='text-4xl md:text-6xl font-black tracking-tight text-white mb-3 uppercase'>
           The Ultimate <span className='text-red-500'>Timeline</span> Breakdown
         </h1>
         <p className='text-lg md:text-xl text-slate-400 max-w-2xl mx-auto font-light leading-relaxed'>
