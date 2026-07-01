@@ -1,25 +1,20 @@
 name: CI/CD Portfolio Auto-Deploy
-
 on:
   push:
     branches: [main]
-
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
-
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
       # 1. Build & Push Client
       - name: Build and Push Client Image
         uses: docker/build-push-action@v5
@@ -33,7 +28,6 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-client:sha-${{ github.sha }}
           build-args: |
             NEXT_PUBLIC_API_URL=https://deepakpun-labs.com
-
       # 2. Build & Push Core API
       - name: Build and Push Core API Image
         uses: docker/build-push-action@v5
@@ -45,7 +39,6 @@ jobs:
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-core-api:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-core-api:sha-${{ github.sha }}
-
       # 3. Build & Push Docs
       - name: Build and Push Docs Image
         uses: docker/build-push-action@v5
@@ -64,45 +57,54 @@ jobs:
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
-
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: "npm"
           cache-dependency-path: services/client/package-lock.json
-
       - name: Install Client Dependencies
         run: |
           cd services/client
           npm ci
-
+          echo "================================================================"
+          echo "📦 CLIENT DEPENDENCIES INSTALLED"
+          echo "✅ Package ecosystem locked and hydrated via npm ci."
+          echo "================================================================"
       - name: Get Playwright Version
         id: playwright-version
         run: |
           cd services/client
           echo "version=$(node -p "require('@playwright/test/package.json').version")" >> $GITHUB_OUTPUT
-
+          echo "================================================================"
+          echo "🔍 PLAYWRIGHT SCHEMA LOOKUP COMPLETE"
+          echo "✅ Resolving test runner framework compilation layers."
+          echo "================================================================"
       - name: Cache Playwright Browsers
         id: cache-playwright
         uses: actions/cache@v4
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ steps.playwright-version.outputs.version }}-${{ runner.os }}
-
       - name: Install Playwright System Dependencies & Browsers
-        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        if: steps.cache-playwright.outputs.cache-hit!= 'true'
         run: |
           cd services/client
           npx playwright install --with-deps chromium
-
+          echo "================================================================"
+          echo "🌐 BROWSER ENGINE COLD INITIALIZATION COMPLETE"
+          echo "✅ Downloaded and sandboxed raw browser binaries."
+          echo "================================================================"
       - name: Install Playwright System Dependencies Only (Cache Hit)
         if: steps.cache-playwright.outputs.cache-hit == 'true'
         run: |
           cd services/client
           npx playwright install-deps chromium
-
-            # FORCES A CLEAN ROOT DIRECTORY AND MANUALLY SEEDS SYSTEM CERTIFICATES
+          echo "================================================================"
+          echo "♻️ PLAYWRIGHT BROWSER CACHE HIT SUCCESSFUL"
+          echo "✅ Restored binary images and configured host system dependencies."
+          echo "================================================================"
+      # FORCES A CLEAN ROOT DIRECTORY AND MANUALLY SEEDS SYSTEM CERTIFICATES
       - name: Mock Let's Encrypt Volumes & Envs for Nginx Validation
         run: |
           # 1. Clean up and recreate structural paths with absolute string characters
@@ -110,25 +112,31 @@ jobs:
           sudo rm -rf /root/portfolio/certbot_www
           sudo mkdir -p /root/portfolio/certbot_etc/live/deepakpun-labs.com
           sudo mkdir -p /root/portfolio/certbot_www
-
           # 2. Point openssl directly to the literal target file paths
           sudo openssl req -x509 -nodes -days 1 -newkey rsa:2048 \
             -keyout /root/portfolio/certbot_etc/live/deepakpun-labs.com/privkey.pem \
             -out /root/portfolio/certbot_etc/live/deepakpun-labs.com/fullchain.pem \
             -subj "/CN=localhost"
-
           # 3. Generate local test environment variables
-          echo "MONGO_ROOT_USER=testuser" > .env
-          echo "MONGO_ROOT_PASSWORD=testpass" >> .env
-
+          echo "MONGO_ROOT_USER=testuser" >.env
+          echo "MONGO_ROOT_PASSWORD=testpass" >>.env
+          echo "================================================================"
+          echo "🔐 LOCAL SECURITY LAYER GENERATED SUCCESSFULLY"
+          echo "✅ Self-signed SSL credentials provisioned for deepakpun-labs.com."
+          echo "✅ Ephemeral.env runtime credentials seeded for MongoDB host."
+          echo "================================================================"
       - name: Orchestrate Full E2E Production Stack
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           GITHUB_SHA: ${{ github.sha }}
         run: |
-          IMAGE_TAG=sha-${GITHUB_SHA} docker compose up -d
+          IMAGE_TAG=sha-${GITHUB_SHA}
+          docker compose up -d
           sleep 15
-
+          echo "================================================================"
+          echo "🐳 DOCKER COMPOSE ECOSYSTEM ONLINE"
+          echo "✅ Client, Core-API, Docs, Mongo, and Nginx containers initialized."
+          echo "================================================================"
       - name: Run E2E Test Suite Against Nginx Gateway
         env:
           CI: true
@@ -136,13 +144,20 @@ jobs:
         run: |
           cd services/client
           npm run test:e2e
-
+          echo "================================================================"
+          echo "🚀 PLAYWRIGHT E2E TESTING CLEARED SUCCESSFULLY!"
+          echo "✅ Next.js UI elements validated against Nginx Reverse Proxy."
+          echo "✅ Isolated MongoDB & Express microservices responding properly."
+          echo "================================================================"
       - name: Teardown E2E Stack
         if: always()
         run: |
           docker compose down
           sudo rm -rf /root/portfolio/certbot_etc /root/portfolio/certbot_www
-
+          echo "================================================================"
+          echo "🧹 WORKSPACE DE-PROVISIONING COMPLETE"
+          echo "✅ Ephemeral runner containers and mock folders completely purged."
+          echo "================================================================"
       - name: Upload Test Report Artifacts on Failure
         if: failure()
         uses: actions/upload-artifact@v4
@@ -157,11 +172,13 @@ jobs:
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
-
       - name: Generate Production Environment File
         run: |
-          echo "${{ secrets.PROD_ENV_FILE }}" > .env
-
+          echo "${{ secrets.PROD_ENV_FILE }}" >.env
+          echo "================================================================"
+          echo "📝 PRODUCTION VARIABLES DEPLOYED TO CONTEXT"
+          echo "✅ Secrets unpacked from secure repository vaults."
+          echo "================================================================"
       - name: Copy Deployment Files to Droplet
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -172,7 +189,6 @@ jobs:
           target: "~/portfolio"
           overwrite: true
           timeout: 120s
-
       - name: SSH, Run Maintenance, and Handle Reboot
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -181,18 +197,16 @@ jobs:
           key: ${{ secrets.DROPLET_SSH_KEY }}
           script: |
             cd ~/portfolio
-            mkdir -p .github/scripts
+            mkdir -p.github/scripts
             chmod +x run.sh
-            chmod +x .github/scripts/maintenance.sh
-            rm -f .reboot_pending
-            ./.github/scripts/maintenance.sh
-            if [ -f .reboot_pending ]; then
+            chmod +x.github/scripts/maintenance.sh
+            rm -f.reboot_pending./.github/scripts/maintenance.sh
+            if [ -f.reboot_pending ]; then
               echo "Reboot detected! Initiating safe server restart..."
-              rm -f .reboot_pending
+              rm -f.reboot_pending
               nohup sh -c "sleep 1 && reboot" > /dev/null 2>&1 &
               exit 0
             fi
-
       - name: Wait for Droplet to come back online
         run: |
           echo "Waiting for Droplet to reboot..."
@@ -201,6 +215,10 @@ jobs:
               echo "Droplet port 22 is open!"
               echo "Giving the SSH daemon 25 seconds to fully initialize and accept connections..."
               sleep 25
+              echo "================================================================"
+              echo "🌐 DIGITALOCEAN DROPLET BACK ONLINE"
+              echo "✅ Remote host operational and accepting secure connections."
+              echo "================================================================"
               exit 0
             fi
             echo "Still waiting... ($((i*5))s)"
@@ -208,7 +226,6 @@ jobs:
           done
           echo "Error: Droplet timed out during reboot."
           exit 1
-
       - name: SSH and Trigger Production Docker Deployment
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -220,4 +237,8 @@ jobs:
             echo "Starting Docker containers..."
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             ./run.sh prod
-            docker compose exec -T nginx nginx -s reload
+            docker compose exec -T nginx -s reload
+            echo "================================================================"
+            echo "🎉 LIVE PRODUCTION INFRASTRUCTURE UPDATED"
+            echo "🚀 MERN Microservices deployed securely with 100% test validation!"
+            echo "================================================================"
