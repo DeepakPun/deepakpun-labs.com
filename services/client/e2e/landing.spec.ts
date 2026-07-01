@@ -10,7 +10,7 @@ test.describe("Landing Page E2E Suite", () => {
     page,
   }) => {
     // Assert the document title or current URL to confirm base routing works
-    await expect(page).toHaveURL("http://localhost:3000/")
+    await expect(page).toHaveURL("http://localhost/")
 
     // Test for the main headline element presence inside your layout
     const mainHeading = page.getByRole("heading", {
