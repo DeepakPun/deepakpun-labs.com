@@ -1,13 +1,13 @@
 name: Weekly Droplet Maintenance
 
 on:
-  # schedule:
-  # Runs at 03:00 AM every Sunday
-  # - cron: '0 3 * * 0'
-  # workflow_dispatch: # Allows you to manually trigger it from GitHub UI if needed
-  push:
-    branches: [main]
-  workflow_dispatch:
+  schedule:
+    # Runs at 03:00 AM every Sunday
+    - cron: '0 3 * * 0'
+  workflow_dispatch: # Allows manual trigger it from GitHub UI if needed
+  # push:
+  # branches: [main]
+  # workflow_dispatch:
 
 jobs:
   maintenance:

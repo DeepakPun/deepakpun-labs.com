@@ -58,8 +58,97 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-docs:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-docs:sha-${{ github.sha }}
 
-  deploy-to-droplet:
+  e2e-testing:
     needs: build-and-push
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: services/client/package-lock.json
+
+      - name: Install Client Dependencies
+        run: |
+          cd services/client
+          npm ci
+
+      - name: Get Playwright Version
+        id: playwright-version
+        run: |
+          cd services/client
+          echo "version=$(node -p "require('@playwright/test/package.json').version")" >> $GITHUB_OUTPUT
+
+      - name: Cache Playwright Browsers
+        id: cache-playwright
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ steps.playwright-version.outputs.version }}-${{ runner.os }}
+
+      - name: Install Playwright System Dependencies & Browsers
+        if: steps.cache-playwright.outputs.cache-hit != 'true'
+        run: |
+          cd services/client
+          npx playwright install --with-deps chromium
+
+      - name: Install Playwright System Dependencies Only (Cache Hit)
+        if: steps.cache-playwright.outputs.cache-hit == 'true'
+        run: |
+          cd services/client
+          npx playwright install-deps chromium
+
+      # Safely replicates your production folder paths & places mock cert files to bypass Nginx load crashes
+      - name: Mock Let's Encrypt Volumes & Envs for Nginx Validation
+        run: |
+          sudo mkdir -p /root/portfolio/certbot_etc
+          sudo mkdir -p /root/portfolio/certbot_www
+          sudo mkdir -p /root/portfolio/certbot_etc/live/deepakpun-labs.com
+
+          sudo openssl req -x509 -nodes -days 1 -newkey rsa:2048 \
+            -keyout /root/portfolio/certbot_etc/live/://deepakpun-labs.com \
+            -out /root/portfolio/certbot_etc/live/://deepakpun-labs.com \
+            -subj "/CN=localhost"
+
+          echo "MONGO_ROOT_USER=testuser" > .env
+          echo "MONGO_ROOT_PASSWORD=testpass" >> .env
+
+      - name: Orchestrate Full E2E Production Stack
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          GITHUB_SHA: ${{ github.sha }}
+        run: |
+          IMAGE_TAG=sha-${GITHUB_SHA} docker compose up -d
+          sleep 15
+
+      - name: Run E2E Test Suite Against Nginx Gateway
+        env:
+          CI: true
+          PLAYWRIGHT_TEST_BASE_URL: https://localhost
+        run: |
+          cd services/client
+          npm run test:e2e
+
+      - name: Teardown E2E Stack
+        if: always()
+        run: |
+          docker compose down
+          sudo rm -rf /root/portfolio/certbot_etc /root/portfolio/certbot_www
+
+      - name: Upload Test Report Artifacts on Failure
+        if: failure()
+        uses: actions/artifacts-upload@v4
+        with:
+          name: playwright-report
+          path: services/client/playwright-report/
+          retention-days: 7
+
+  deploy-to-droplet:
+    needs: [build-and-push, e2e-testing]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
@@ -75,8 +164,8 @@ jobs:
           host: ${{ secrets.DROPLET_IP }}
           username: root
           key: ${{ secrets.DROPLET_SSH_KEY }}
-          source: 'compose.yaml,run.sh,nginx.conf,.env,.github/scripts/maintenance.sh'
-          target: '~/portfolio'
+          source: "compose.yaml,run.sh,nginx.conf,.env,.github/scripts/maintenance.sh"
+          target: "~/portfolio"
           overwrite: true
           timeout: 120s
 
@@ -88,19 +177,11 @@ jobs:
           key: ${{ secrets.DROPLET_SSH_KEY }}
           script: |
             cd ~/portfolio
-
-            # Ensure permissions are correct
             mkdir -p .github/scripts
             chmod +x run.sh
             chmod +x .github/scripts/maintenance.sh
-
-            # Remove any stale reboot markers from previous runs
             rm -f .reboot_pending
-
-            # Execute maintenance script
             ./.github/scripts/maintenance.sh
-
-            # If reboot is pending, schedule it 1 second out and exit cleanly to avoid GH Action crash
             if [ -f .reboot_pending ]; then
               echo "Reboot detected! Initiating safe server restart..."
               rm -f .reboot_pending
@@ -111,7 +192,6 @@ jobs:
       - name: Wait for Droplet to come back online
         run: |
           echo "Waiting for Droplet to reboot..."
-          # Loop every 5 seconds up to 5 minutes (60 iterations)
           for i in {1..60}; do
             if nc -z -w 5 ${{ secrets.DROPLET_IP }} 22; then
               echo "Droplet port 22 is open!"
