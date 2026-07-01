@@ -214,7 +214,7 @@ jobs:
             if nc -z -w 5 ${{ secrets.DROPLET_IP }} 22; then
               echo "Droplet port 22 is open!"
               echo "Giving the SSH daemon 25 seconds to fully initialize and accept connections..."
-              sleep 25
+              sleep 60
               echo "================================================================"
               echo "🌐 DIGITALOCEAN DROPLET BACK ONLINE"
               echo "✅ Remote host operational and accepting secure connections."
