@@ -1,5 +1,11 @@
 {
   "files": [],
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "module": "Node16",
+    "esModuleInterop": true,
+    "moduleResolution": "node16"
+  },
   "references": [
     { "path": "./tsconfig.app.json" },
     { "path": "./tsconfig.node.json" }

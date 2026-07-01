@@ -2,6 +2,10 @@ name: CI/CD Portfolio Auto-Deploy
 on:
   push:
     branches: [main]
+
+env:
+  NODE_VERSION: 24
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -51,7 +55,57 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-docs:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-docs:sha-${{ github.sha }}
 
-  e2e-testing:
+  test-core-api:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    services:
+      mongodb:
+        image: mongo:6
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --eval 'db.adminCommand({ping:1})'"
+          --health-interval 10s
+          --health-timeout 10s
+          --health-retries 5
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: services/core-api/package-lock.json
+      - name: Install Core API Dependencies
+        run: |
+          cd services/core-api
+          npm ci
+          echo "================================================================"
+          echo "⚡ CORE-API DEPENDENCIES INSTALLED"
+          echo "✅ Express + MongoDB ecosystem locked via npm ci."
+          echo "================================================================"
+      - name: Run Express API Tests
+        env:
+          NODE_ENV: test
+          MONGO_URI: mongodb://localhost:27017/portfolio_test
+          PORT: 3001
+        run: |
+          cd services/core-api
+          npm run test -- --ci --coverage
+          echo "================================================================"
+          echo "🧪 CORE-API TESTS PASSED"
+          echo "✅ Express routes + MongoDB integration validated."
+          echo "================================================================"
+      - name: Upload Coverage Report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-api-coverage
+          path: services/core-api/coverage/
+          retention-days: 7
+
+  test-docs:
     needs: build-and-push
     runs-on: ubuntu-latest
     steps:
@@ -60,7 +114,48 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: ${{ env.NODE_VERSION }}
+          cache: "npm"
+          cache-dependency-path: services/docs/package-lock.json
+      - name: Install Docs Dependencies
+        run: |
+          cd services/docs
+          npm ci
+          echo "================================================================"
+          echo "📚 DOCS DEPENDENCIES INSTALLED"
+          echo "✅ React + Tailwind + TS ecosystem locked via npm ci."
+          echo "================================================================"
+      - name: Type Check
+        run: |
+          cd services/docs
+          npx tsc --noEmit
+          echo "✅ TypeScript compilation clean"
+      - name: Run Docs Unit Tests
+        run: |
+          cd services/docs
+          npm run test --ci --coverage --passWithNoTests
+          echo "================================================================"
+          echo "📝 DOCS TESTS PASSED"
+          echo "✅ React components + Tailwind styles validated."
+          echo "================================================================"
+      - name: Upload Docs Coverage
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: docs-coverage
+          path: services/docs/coverage/
+          retention-days: 7
+
+  e2e-testing:
+    needs: [build-and-push, test-core-api, test-docs]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
           cache: "npm"
           cache-dependency-path: services/client/package-lock.json
       - name: Install Client Dependencies
@@ -107,17 +202,14 @@ jobs:
       # FORCES A CLEAN ROOT DIRECTORY AND MANUALLY SEEDS SYSTEM CERTIFICATES
       - name: Mock Let's Encrypt Volumes & Envs for Nginx Validation
         run: |
-          # 1. Clean up and recreate structural paths with absolute string characters
           sudo rm -rf /root/portfolio/certbot_etc
           sudo rm -rf /root/portfolio/certbot_www
           sudo mkdir -p /root/portfolio/certbot_etc/live/deepakpun-labs.com
           sudo mkdir -p /root/portfolio/certbot_www
-          # 2. Point openssl directly to the literal target file paths
           sudo openssl req -x509 -nodes -days 1 -newkey rsa:2048 \
             -keyout /root/portfolio/certbot_etc/live/deepakpun-labs.com/privkey.pem \
             -out /root/portfolio/certbot_etc/live/deepakpun-labs.com/fullchain.pem \
             -subj "/CN=localhost"
-          # 3. Generate local test environment variables
           echo "MONGO_ROOT_USER=testuser" >.env
           echo "MONGO_ROOT_PASSWORD=testpass" >>.env
           echo "================================================================"
@@ -213,7 +305,12 @@ jobs:
           for i in {1..60}; do
             if nc -z -w 5 ${{ secrets.DROPLET_IP }} 22; then
               echo "Droplet port 22 is open!"
-              echo "Giving the SSH daemon 25 seconds to fully initialize and accept connections..."
+              echo "Giving the SSH daemon 60 seconds to fully initialize and accept connections..."
+              for i in {60..1}; do
+                printf "\r⏳ Time remaining: %2d seconds... " "$i"
+                sleep 1
+              done
+              printf "\r✅ Initialization period complete! \n"
               sleep 60
               echo "================================================================"
               echo "🌐 DIGITALOCEAN DROPLET BACK ONLINE"
@@ -232,6 +329,8 @@ jobs:
           host: ${{ secrets.DROPLET_IP }}
           username: root
           key: ${{ secrets.DROPLET_SSH_KEY }}
+          retry: 5
+          retry_timeout: 30s
           script: |
             cd ~/portfolio
             echo "Starting Docker containers..."
