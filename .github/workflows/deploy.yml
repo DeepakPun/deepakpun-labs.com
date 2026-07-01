@@ -102,18 +102,22 @@ jobs:
           cd services/client
           npx playwright install-deps chromium
 
-      # Safely replicates your production folder paths & places mock cert files to bypass Nginx load crashes
+            # FORCES A CLEAN ROOT DIRECTORY AND MANUALLY SEEDS SYSTEM CERTIFICATES
       - name: Mock Let's Encrypt Volumes & Envs for Nginx Validation
         run: |
-          sudo mkdir -p /root/portfolio/certbot_etc
-          sudo mkdir -p /root/portfolio/certbot_www
+          # 1. Clean up and recreate structural paths with absolute string characters
+          sudo rm -rf /root/portfolio/certbot_etc
+          sudo rm -rf /root/portfolio/certbot_www
           sudo mkdir -p /root/portfolio/certbot_etc/live/deepakpun-labs.com
+          sudo mkdir -p /root/portfolio/certbot_www
 
+          # 2. Point openssl directly to the literal target file paths
           sudo openssl req -x509 -nodes -days 1 -newkey rsa:2048 \
-            -keyout /root/portfolio/certbot_etc/live/://deepakpun-labs.com \
-            -out /root/portfolio/certbot_etc/live/://deepakpun-labs.com \
+            -keyout /root/portfolio/certbot_etc/live/deepakpun-labs.com/privkey.pem \
+            -out /root/portfolio/certbot_etc/live/deepakpun-labs.com/fullchain.pem \
             -subj "/CN=localhost"
 
+          # 3. Generate local test environment variables
           echo "MONGO_ROOT_USER=testuser" > .env
           echo "MONGO_ROOT_PASSWORD=testpass" >> .env
 
