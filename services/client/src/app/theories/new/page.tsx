@@ -160,8 +160,7 @@ export default function NewTheoryPage() {
           </p>
           <div className="flex items-center gap-2 pt-1">
             <code className="bg-slate-950 px-3 py-1.5 rounded text-slate-100 select-all border border-slate-800 font-bold block">
-              {process.env.NEXT_PUBLIC_THEORIES_API_KEY ||
-                "your-sample-swagger-key"}
+              multiverse_labs_test_key_a1b2c3d4_e5f6g7h8_90abcdef
             </code>
           </div>
         </div>
