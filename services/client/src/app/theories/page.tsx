@@ -1,10 +1,13 @@
-export const dynamic = 'force-dynamic'
-import TheoriesList from '@/components/TheoriesList'
+export const dynamic = "force-dynamic"
+
+import TheoriesList from "@/components/TheoriesList"
 
 export default function TheoriesPage() {
   return (
-    <div className='min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-red-600 selection:text-white'>
-      <TheoriesList />
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-red-600 selection:text-white p-6 md:p-12">
+      <main className="grow">
+        <TheoriesList />
+      </main>
     </div>
   )
 }

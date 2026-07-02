@@ -1,22 +1,28 @@
-import ErrorHandler from '../utils/ErrorHandler.js'
-
 export const protectRoute = (req, res, next) => {
-  // 1. Extract the key token from custom request header tags
-  const apiKey = req.headers['x-api-key']
+  const receivedKey = req.headers["x-api-key"]?.trim()
+  const validKey = process.env.API_SECRET_KEY?.trim()
 
-  // 2. Validate the key existence and authenticity
-  const secretKey = process.env.API_SECRET_KEY
+  // Debug logs - remove after it works
+  console.log("Received x-api-key:", receivedKey)
+  console.log("Expected API_KEY:", validKey)
+  console.log("Match:", receivedKey === validKey)
 
-  if (!apiKey || apiKey !== secretKey) {
-    // Blocks execution instantly and handles structured communication back to the caller
-    return next(
-      new ErrorHandler(
-        'Access Denied. A valid security clearance token (x-api-key) is required to alter timelines.',
-        401,
-      ),
-    )
+  if (!receivedKey) {
+    return res.status(401).json({
+      success: false,
+      statusCode: 401,
+      message:
+        "Access Denied. A valid security clearance token (x-api-key) is required to alter timelines.",
+    })
   }
 
-  // 3. Clear authorization check: pass control cleanly to the next controller function
+  if (receivedKey !== validKey) {
+    return res.status(401).json({
+      success: false,
+      statusCode: 401,
+      message: "Access Denied. Invalid security clearance token.",
+    })
+  }
+
   next()
 }
