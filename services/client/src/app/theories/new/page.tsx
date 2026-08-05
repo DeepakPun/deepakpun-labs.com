@@ -62,15 +62,16 @@ export default function NewTheoryPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setErrors([])
-
     if (!validateForm()) {
       return
     }
-
     setIsSubmitting(true)
-    const baseUrl = process.env.NEXT_PUBLIC_API_URL
-      ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
-      : "http://localhost:3001/api/v1"
+
+    const absoluteBase =
+      process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1"
+    const baseUrl = absoluteBase.endsWith("/api/v1")
+      ? absoluteBase
+      : `${absoluteBase}/api/v1`
 
     try {
       const response = await fetch(`${baseUrl}/theories`, {
@@ -107,22 +108,23 @@ export default function NewTheoryPage() {
         }
 
         setErrors((prev) => [...prev, message])
-        setIsSubmitting(false)
+        setIsSubmitting(false) // Safe to turn off: we stayed on the page
         return
       }
 
-      router.push("/theories")
+      // === SUCCESS PATH ===
+      // Force immediate router refresh, then route away
       router.refresh()
+      router.push("/theories")
     } catch (error: unknown) {
       console.error("Network error:", error)
       setErrors((prev) => [
         ...prev,
         "Network error. Check your connection and try again.",
       ])
-      setIsSubmitting(false)
-    } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false) // Safe to turn off: we stayed on the page
     }
+    // REMOVED THE FINALLY BLOCK ENTIRELY
   }
 
   return (

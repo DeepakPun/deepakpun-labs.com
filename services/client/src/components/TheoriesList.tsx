@@ -30,6 +30,9 @@ interface ApiResponse {
   theories: Theory[]
 }
 
+const BASE_API_URL =
+  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1"
+
 export default function TheoriesList() {
   const [theories, setTheories] = useState<Theory[]>([])
   const [page, setPage] = useState<number>(1)
@@ -39,15 +42,19 @@ export default function TheoriesList() {
   const [loading, setLoading] = useState<boolean>(true)
   const ITEMS_PER_PAGE = 2
 
-  const resolvedUrl = process.env.NEXT_PUBLIC_API_URL
-    ? `${process.env.NEXT_PUBLIC_API_URL}/api/v1`
-    : "http://localhost:3001/api/v1"
-
   useEffect(() => {
     const controller = new AbortController()
     const signal = controller.signal
 
-    fetch(`${resolvedUrl}/theories?page=${page}&limit=${ITEMS_PER_PAGE}`, {
+    // 2. ISOLATE DOCKER ROUTING INSIDE THE EFFECT
+    // This code only runs in the browser, OR during an on-server fetch loop.
+    // It will never conflict with the initial HTML structure.
+    const isServerSideExecution = typeof window === "undefined"
+    const activeTargetUrl = isServerSideExecution
+      ? "http://core-api:3001/api/v1"
+      : BASE_API_URL
+
+    fetch(`${activeTargetUrl}/theories?page=${page}&limit=${ITEMS_PER_PAGE}`, {
       signal,
       cache: "no-store",
     })
@@ -71,13 +78,15 @@ export default function TheoriesList() {
 
     return () => {
       controller.abort()
-      setLoading(true)
+      // Removed setLoading(true) to prevent bleed leaks
     }
-  }, [page, resolvedUrl])
+  }, [page]) // Removed resolvedUrl dependency since BASE_API_URL is static
 
+  // 3. FIX THE SUB-HEADER DISPLAY TEXT TO PREVENT HYDRATION BLOCKS
+  // Instead of printing the raw dynamic URL string which triggers the mismatch,
+  // print a static system title or use an empty state indicator until loaded.
   return (
     <main className="max-w-4xl mx-auto px-4 py-12 grow w-full space-y-8 bg-slate-950">
-      {/* Header Container */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-900 pb-6">
         <div className="space-y-1">
           <h2 className="text-2xl font-black uppercase tracking-wider text-white font-mono flex items-center gap-3">
@@ -85,8 +94,10 @@ export default function TheoriesList() {
             Core Intelligence Archives
           </h2>
           <p className="text-xs text-slate-500 font-mono tracking-tight">
-            Secure connection established:{" "}
-            <span className="text-slate-400">{resolvedUrl}</span>
+            Secure connection status:{" "}
+            <span className="text-emerald-500 font-bold animate-pulse">
+              ONLINE
+            </span>
           </p>
         </div>
 

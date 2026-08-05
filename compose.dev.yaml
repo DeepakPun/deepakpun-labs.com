@@ -4,13 +4,14 @@ services:
       context: ./services/client
       dockerfile: Dockerfile.dev
     ports:
-      - '${CLIENT_PORT}:${CLIENT_PORT}'
+      - "${CLIENT_PORT}:${CLIENT_PORT}"
     volumes:
       - ./services/client:/app
       - /app/.next
       - /app/node_modules
     environment:
       - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL}
+      - NEXT_SERVER_API_URL=http://core-api:3001
       - WATCHPACK_POLLING=true
 
   core-api:
@@ -18,7 +19,7 @@ services:
       context: ./services/core-api
       dockerfile: Dockerfile.dev
     ports:
-      - '${API_PORT}:${API_PORT}'
+      - "${API_PORT}:${API_PORT}"
     develop:
       watch:
         - action: sync+restart
@@ -27,8 +28,13 @@ services:
     volumes:
       - ./services/core-api:/app
       - /app/node_modules
-    env_file:
-      - .env
+    # env_file:
+    # - ./services/core-api/.env
+    # - .env
+    environment:
+      - PORT=${PORT}
+      - MONGO_URI=${MONGO_URI}
+      - API_SECRET_KEY=${API_SECRET_KEY}
     command: npm run dev
 
   docs:
@@ -36,7 +42,7 @@ services:
       context: ./services/docs
       dockerfile: Dockerfile.dev
     ports:
-      - '${DOCS_PORT}:${DOCS_PORT}'
+      - "${DOCS_PORT}:${DOCS_PORT}"
     volumes:
       - ./services/docs:/app
       - /app/node_modules
@@ -47,7 +53,10 @@ services:
   mongo:
     image: mongo:latest
     ports:
-      - '27017:27017'
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_ROOT_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
     volumes:
       - mongo_data:/data/db
 
