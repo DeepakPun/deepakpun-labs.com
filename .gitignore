@@ -4,6 +4,7 @@ node_modules/
 
 deploy-backup.yml
 maintenance-backup.sh
+nginx-backup.conf
 
 # Next.js build output
 .next/

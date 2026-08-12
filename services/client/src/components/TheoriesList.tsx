@@ -30,8 +30,8 @@ interface ApiResponse {
   theories: Theory[]
 }
 
-const BASE_API_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1"
+// const BASE_API_URL =
+// process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001/api/v1"
 
 export default function TheoriesList() {
   const [theories, setTheories] = useState<Theory[]>([])
@@ -50,11 +50,11 @@ export default function TheoriesList() {
     // This code only runs in the browser, OR during an on-server fetch loop.
     // It will never conflict with the initial HTML structure.
     const isServerSideExecution = typeof window === "undefined"
-    const activeTargetUrl = isServerSideExecution
-      ? "http://core-api:3001/api/v1"
-      : BASE_API_URL
+    // const activeTargetUrl = isServerSideExecution
+    //   ? "/api/v1"
+    //   : BASE_API_URL
 
-    fetch(`${activeTargetUrl}/theories?page=${page}&limit=${ITEMS_PER_PAGE}`, {
+    fetch(`/api/v1/theories?page=${page}&limit=${ITEMS_PER_PAGE}`, {
       signal,
       cache: "no-store",
     })

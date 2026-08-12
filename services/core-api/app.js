@@ -26,20 +26,23 @@ const allowedOrigins = [
 ]
 
 const corsOptions = {
-  origin: function (origin, callback) {
-    if (!origin) return callback(null, true)
-    if (allowedOrigins.indexOf(origin) !== -1) {
-      callback(null, true)
-    } else {
-      callback(new Error("Not allowed by CORS"))
-    }
+  origin: (origin, cb) => {
+    if (!origin || allowedOrigins.includes(origin)) return cb(null, true)
+    return cb(new Error("Not allowed by cors"))
   },
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization", "x-api-key"],
-  optionsSuccessStatus: 200,
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTONS", "PATCH"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "x-api-key",
+    "x-nextjs-cache",
+  ],
+  credentials: true,
+  optionsSuccessStatus: 204,
 }
 
 app.use(cors(corsOptions))
+app.options("*", cors(corsOptions))
 app.use(express.json())
 
 // --- Swagger ---
