@@ -3,6 +3,7 @@ node_modules/
 .pnpm-store/
 
 deploy-backup.yml
+maintenance-backup.sh
 
 # Next.js build output
 .next/
