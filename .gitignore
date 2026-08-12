@@ -2,6 +2,8 @@
 node_modules/
 .pnpm-store/
 
+deploy-backup.yml
+
 # Next.js build output
 .next/
 out/

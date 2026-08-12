@@ -1,5 +1,5 @@
-// tests/App.test.tsx
 import React from "react"
+import "@testing-library/jest-dom"
 import { render, screen } from "@testing-library/react"
 import { jest } from "@jest/globals"
 import App from "../src/App"
@@ -20,18 +20,11 @@ jest.unstable_mockModule("../src/constants/sidebarNav", () => ({
   ],
 }))
 
-// 3. Mock Kanban pipeline data fallback structure
-jest.unstable_mockModule("../src/constants/kanbanData.json", () => ({
-  default: {
-    controlPlane: { queued: [], executing: [], stable: [] },
-    edgeLayer: { queued: [], executing: [], stable: [] },
-  },
-}))
+// REMOVED: The kanbanData.json mock module is now handled safely by jest.config.js
 
 describe("Static Docs Component Shell", () => {
   it("should render the workspace header title correctly", () => {
     render(<App />)
-
     const bannerText = screen.getByText(/Engineering Workspace/i)
     expect(bannerText).toBeInTheDocument()
   })

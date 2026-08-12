@@ -68,32 +68,6 @@ export default function Home() {
 
         {/* Right Column */}
         <div className="col-span-1 md:col-span-2 flex flex-col space-y-4 w-full h-full justify-start">
-          {/* Card 1: Spider-Man */}
-          <div className="bg-slate-900/30 border border-slate-900/90 rounded-xl p-5 flex flex-col justify-between space-y-4 relative overflow-hidden shadow-xl group backdrop-blur-sm hover:border-red-900/30 transition-all w-full">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-[10px] font-mono font-bold tracking-widest text-red-500 uppercase bg-red-950/40 border border-red-900/30 px-2 py-0.5 rounded">
-                  Phase 6 Core
-                </span>
-              </div>
-              <h4 className="font-bold text-base text-slate-100 font-sans tracking-tight group-hover:text-red-400 transition-colors">
-                Spider-Man: Brand New Day
-              </h4>
-              <p className="text-xs text-slate-400 leading-relaxed font-normal">
-                Peter Parker navigates isolated city monitoring following
-                complete memory erasure protocols.
-              </p>
-            </div>
-            <div className="border-t border-slate-900/80 pt-3 flex items-center justify-between">
-              <span className="text-[11px] text-slate-500 font-mono uppercase tracking-wider">
-                Release Target:
-              </span>
-              <span className="text-xs font-bold font-mono text-slate-200 bg-slate-950 px-2.5 py-1 rounded border border-slate-900">
-                July 31, 2026
-              </span>
-            </div>
-          </div>
-
           {/* Card 2: Secret Wars */}
           <div className="bg-slate-900/30 border border-slate-900/90 rounded-xl p-5 flex flex-col justify-between space-y-4 relative overflow-hidden shadow-xl group backdrop-blur-sm hover:border-blue-900/30 transition-all w-full">
             <div className="space-y-2">

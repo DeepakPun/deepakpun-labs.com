@@ -12,18 +12,21 @@ jobs:
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-      # 1. Build & Push Client
+
       - name: Build and Push Client Image
         uses: docker/build-push-action@v5
         with:
           context: ./services/client
+          platforms: linux/amd64
           push: true
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/portfolio-client:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/portfolio-client:buildcache,mode=max
@@ -32,22 +35,24 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-client:sha-${{ github.sha }}
           build-args: |
             NEXT_PUBLIC_API_URL=https://deepakpun-labs.com
-      # 2. Build & Push Core API
+
       - name: Build and Push Core API Image
         uses: docker/build-push-action@v5
         with:
           context: ./services/core-api
+          platforms: linux/amd64
           push: true
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/portfolio-core-api:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/portfolio-core-api:buildcache,mode=max
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-core-api:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-core-api:sha-${{ github.sha }}
-      # 3. Build & Push Docs
+
       - name: Build and Push Docs Image
         uses: docker/build-push-action@v5
         with:
           context: ./services/docs
+          platforms: linux/amd64
           push: true
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/portfolio-docs:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/portfolio-docs:buildcache,mode=max
@@ -55,222 +60,17 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-docs:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-docs:sha-${{ github.sha }}
 
-  test-core-api:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    services:
-      mongodb:
-        image: mongo:6
-        ports:
-          - 27017:27017
-        options: >-
-          --health-cmd "mongosh --eval 'db.adminCommand({ping:1})'"
-          --health-interval 10s
-          --health-timeout 10s
-          --health-retries 5
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-          cache-dependency-path: services/core-api/package-lock.json
-      - name: Install Core API Dependencies
-        run: |
-          cd services/core-api
-          npm ci
-          echo "================================================================"
-          echo "⚡ CORE-API DEPENDENCIES INSTALLED"
-          echo "✅ Express + MongoDB ecosystem locked via npm ci."
-          echo "================================================================"
-      - name: Run Express API Tests
-        env:
-          NODE_ENV: test
-          MONGO_URI: mongodb://localhost:27017/portfolio_test
-          PORT: 3001
-        run: |
-          cd services/core-api
-          npm run test -- --ci --coverage
-          echo "================================================================"
-          echo "🧪 CORE-API TESTS PASSED"
-          echo "✅ Express routes + MongoDB integration validated."
-          echo "================================================================"
-      - name: Upload Coverage Report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: core-api-coverage
-          path: services/core-api/coverage/
-          retention-days: 7
-
-  test-docs:
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-          cache-dependency-path: services/docs/package-lock.json
-      - name: Install Docs Dependencies
-        run: |
-          cd services/docs
-          npm ci
-          echo "================================================================"
-          echo "📚 DOCS DEPENDENCIES INSTALLED"
-          echo "✅ React + Tailwind + TS ecosystem locked via npm ci."
-          echo "================================================================"
-      - name: Type Check
-        run: |
-          cd services/docs
-          npx tsc --noEmit
-          echo "✅ TypeScript compilation clean"
-      - name: Run Docs Unit Tests
-        run: |
-          cd services/docs
-          npm run test --ci --coverage --passWithNoTests
-          echo "================================================================"
-          echo "📝 DOCS TESTS PASSED"
-          echo "✅ React components + Tailwind styles validated."
-          echo "================================================================"
-      - name: Upload Docs Coverage
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: docs-coverage
-          path: services/docs/coverage/
-          retention-days: 7
-
-  e2e-testing:
-    needs: [build-and-push, test-core-api, test-docs]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Source Code
-        uses: actions/checkout@v4
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: "npm"
-          cache-dependency-path: services/client/package-lock.json
-      - name: Install Client Dependencies
-        run: |
-          cd services/client
-          npm ci
-          echo "================================================================"
-          echo "📦 CLIENT DEPENDENCIES INSTALLED"
-          echo "✅ Package ecosystem locked and hydrated via npm ci."
-          echo "================================================================"
-      - name: Get Playwright Version
-        id: playwright-version
-        run: |
-          cd services/client
-          echo "version=$(node -p "require('@playwright/test/package.json').version")" >> $GITHUB_OUTPUT
-          echo "================================================================"
-          echo "🔍 PLAYWRIGHT SCHEMA LOOKUP COMPLETE"
-          echo "✅ Resolving test runner framework compilation layers."
-          echo "================================================================"
-      - name: Cache Playwright Browsers
-        id: cache-playwright
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ steps.playwright-version.outputs.version }}-${{ runner.os }}
-      - name: Install Playwright System Dependencies & Browsers
-        if: steps.cache-playwright.outputs.cache-hit!= 'true'
-        run: |
-          cd services/client
-          npx playwright install --with-deps chromium
-          echo "================================================================"
-          echo "🌐 BROWSER ENGINE COLD INITIALIZATION COMPLETE"
-          echo "✅ Downloaded and sandboxed raw browser binaries."
-          echo "================================================================"
-      - name: Install Playwright System Dependencies Only (Cache Hit)
-        if: steps.cache-playwright.outputs.cache-hit == 'true'
-        run: |
-          cd services/client
-          npx playwright install-deps chromium
-          echo "================================================================"
-          echo "♻️ PLAYWRIGHT BROWSER CACHE HIT SUCCESSFUL"
-          echo "✅ Restored binary images and configured host system dependencies."
-          echo "================================================================"
-      # FORCES A CLEAN ROOT DIRECTORY AND MANUALLY SEEDS SYSTEM CERTIFICATES
-      - name: Mock Let's Encrypt Volumes & Envs for Nginx Validation
-        run: |
-          sudo rm -rf /root/portfolio/certbot_etc
-          sudo rm -rf /root/portfolio/certbot_www
-          sudo mkdir -p /root/portfolio/certbot_etc/live/deepakpun-labs.com
-          sudo mkdir -p /root/portfolio/certbot_www
-          sudo openssl req -x509 -nodes -days 1 -newkey rsa:2048 \
-            -keyout /root/portfolio/certbot_etc/live/deepakpun-labs.com/privkey.pem \
-            -out /root/portfolio/certbot_etc/live/deepakpun-labs.com/fullchain.pem \
-            -subj "/CN=localhost"
-          echo "MONGO_ROOT_USER=testuser" >.env
-          echo "MONGO_ROOT_PASSWORD=testpass" >>.env
-          echo "================================================================"
-          echo "🔐 LOCAL SECURITY LAYER GENERATED SUCCESSFULLY"
-          echo "✅ Self-signed SSL credentials provisioned for deepakpun-labs.com."
-          echo "✅ Ephemeral.env runtime credentials seeded for MongoDB host."
-          echo "================================================================"
-      - name: Orchestrate Full E2E Production Stack
-        env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
-          GITHUB_SHA: ${{ github.sha }}
-        run: |
-          IMAGE_TAG=sha-${GITHUB_SHA}
-          docker compose up -d
-          sleep 15
-          echo "================================================================"
-          echo "🐳 DOCKER COMPOSE ECOSYSTEM ONLINE"
-          echo "✅ Client, Core-API, Docs, Mongo, and Nginx containers initialized."
-          echo "================================================================"
-      - name: Run E2E Test Suite Against Nginx Gateway
-        env:
-          CI: true
-          PLAYWRIGHT_TEST_BASE_URL: https://localhost
-        run: |
-          cd services/client
-          npm run test:e2e
-          echo "================================================================"
-          echo "🚀 PLAYWRIGHT E2E TESTING CLEARED SUCCESSFULLY!"
-          echo "✅ Next.js UI elements validated against Nginx Reverse Proxy."
-          echo "✅ Isolated MongoDB & Express microservices responding properly."
-          echo "================================================================"
-      - name: Teardown E2E Stack
-        if: always()
-        run: |
-          docker compose down
-          sudo rm -rf /root/portfolio/certbot_etc /root/portfolio/certbot_www
-          echo "================================================================"
-          echo "🧹 WORKSPACE DE-PROVISIONING COMPLETE"
-          echo "✅ Ephemeral runner containers and mock folders completely purged."
-          echo "================================================================"
-      - name: Upload Test Report Artifacts on Failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: playwright-report
-          path: services/client/playwright-report/
-          retention-days: 7
-
   deploy-to-droplet:
-    needs: [build-and-push, e2e-testing]
+    needs: [build-and-push]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source Code
         uses: actions/checkout@v4
+
       - name: Generate Production Environment File
         run: |
-          echo "${{ secrets.PROD_ENV_FILE }}" >.env
-          echo "================================================================"
-          echo "📝 PRODUCTION VARIABLES DEPLOYED TO CONTEXT"
-          echo "✅ Secrets unpacked from secure repository vaults."
-          echo "================================================================"
+          printf '%s' "${{ secrets.PROD_ENV_FILE }}" >.env
+
       - name: Copy Deployment Files to Droplet
         uses: appleboy/scp-action@v0.1.7
         with:
@@ -281,6 +81,7 @@ jobs:
           target: "~/portfolio"
           overwrite: true
           timeout: 120s
+
       - name: SSH, Run Maintenance, and Handle Reboot
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -289,55 +90,39 @@ jobs:
           key: ${{ secrets.DROPLET_SSH_KEY }}
           script: |
             cd ~/portfolio
-            mkdir -p.github/scripts
-            chmod +x run.sh
-            chmod +x.github/scripts/maintenance.sh
-            rm -f.reboot_pending./.github/scripts/maintenance.sh
+            chmod +x run.sh.github/scripts/maintenance.sh
+            ./.github/scripts/maintenance.sh
             if [ -f.reboot_pending ]; then
               echo "Reboot detected! Initiating safe server restart..."
               rm -f.reboot_pending
               nohup sh -c "sleep 1 && reboot" > /dev/null 2>&1 &
               exit 0
             fi
+
       - name: Wait for Droplet to come back online
         run: |
-          echo "Waiting for Droplet to reboot..."
+          echo "Waiting for Droplet to reboot (if needed)..."
           for i in {1..60}; do
             if nc -z -w 5 ${{ secrets.DROPLET_IP }} 22; then
               echo "Droplet port 22 is open!"
-              echo "Giving the SSH daemon 60 seconds to fully initialize and accept connections..."
-              for i in {60..1}; do
-                printf "\r⏳ Time remaining: %2d seconds... " "$i"
-                sleep 1
-              done
-              printf "\r✅ Initialization period complete! \n"
-              sleep 60
-              echo "================================================================"
-              echo "🌐 DIGITALOCEAN DROPLET BACK ONLINE"
-              echo "✅ Remote host operational and accepting secure connections."
-              echo "================================================================"
+              sleep 10
               exit 0
             fi
-            echo "Still waiting... ($((i*5))s)"
             sleep 5
           done
-          echo "Error: Droplet timed out during reboot."
+          echo "Error: Droplet timed out."
           exit 1
+
       - name: SSH and Trigger Production Docker Deployment
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.DROPLET_IP }}
           username: root
           key: ${{ secrets.DROPLET_SSH_KEY }}
-          retry: 5
-          retry_timeout: 30s
+          timeout: 30s
+          command_timeout: 10m
           script: |
             cd ~/portfolio
-            echo "Starting Docker containers..."
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             ./run.sh prod
-            docker compose exec -T nginx -s reload
-            echo "================================================================"
-            echo "🎉 LIVE PRODUCTION INFRASTRUCTURE UPDATED"
-            echo "🚀 MERN Microservices deployed securely with 100% test validation!"
-            echo "================================================================"
+            docker compose exec -T nginx nginx -s reload

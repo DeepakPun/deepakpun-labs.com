@@ -1,7 +1,7 @@
 import { useState } from "react"
 import ReactMarkdown from "react-markdown"
 import { motion, AnimatePresence } from "framer-motion"
-import rawKanbanData from "./constants/kanbanData.json"
+import rawKanbanData from "./constants/kanbanData.json" with { type: "json" }
 
 import architectureMd from "./docs/architecture.md?raw"
 import blogBuildingMd from "./docs/building-event-driven-backends.md?raw"
