@@ -36,23 +36,13 @@ jobs:
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-core-api:latest
             ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-core-api:sha-${{ github.sha }}
 
-      - name: Build and Push Docs
-        uses: docker/build-push-action@v5
-        with:
-          context: ./services/docs
-          platforms: linux/amd64
-          push: true
-          tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-docs:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/portfolio-docs:sha-${{ github.sha }}
-
   deploy-to-droplet:
     needs: [build-and-push]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Generate.env
-        run: printf '%s' "${{ secrets.PROD_ENV_FILE }}" >.env
+      - name: Generate .env
+        run: printf '%s' "${{ secrets.PROD_ENV_FILE }}" > .env
 
       - name: Copy files
         uses: appleboy/scp-action@v0.1.7
@@ -71,7 +61,8 @@ jobs:
           key: ${{ secrets.DROPLET_SSH_KEY }}
           script: |
             cd /root/portfolio
-            chmod +x run.sh.github/scripts/maintenance.sh
+            chmod +x run.sh
+            chmod +x .github/scripts/maintenance.sh
             echo "${{ secrets.DOCKERHUB_TOKEN }}" | docker login -u "${{ secrets.DOCKERHUB_USERNAME }}" --password-stdin
             ./run.sh prod
             docker compose exec -T nginx nginx -s reload

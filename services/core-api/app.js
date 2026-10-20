@@ -1,12 +1,4 @@
-import dotenvx from "@dotenvx/dotenvx"
-
-import { fileURLToPath } from "url"
-import path from "path"
-
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-
-dotenvx.config({ path: path.resolve(__dirname, ".env") })
+import "./loadEnv.js"
 
 import express from "express"
 import cors from "cors"
@@ -15,12 +7,15 @@ import fs from "fs"
 import YAML from "yaml"
 import theoryRoutes from "./routes/theoryRoutes.js"
 import { globalErrorHandler } from "./middleware/errorMiddleware.js"
+import sampledata from "./sampledata.json" with { type: "json" }
 
 const app = express()
 
 const allowedOrigins = [
   "http://localhost:3000",
   "http://localhost:3001",
+  "http://localhost:5173",
+  "http://localhost",
   "https://deepakpun-labs.com",
   "https://www.deepakpun-labs.com",
 ]
@@ -72,6 +67,20 @@ app.get("/", (req, res) => {
     errors: null,
     message: "Welcome to the Marvel Theory API!",
   })
+})
+
+// -- Health for dashboard
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    ...sampledata,
+    timestamp: new Date().toISOString(),
+    uptimeSeconds: process.uptime(),
+  })
+})
+
+app.get("/api/v1/health", (req, res) => {
+  // alias - same handler, good for API gateway checks
+  res.redirect(307, "/health")
 })
 
 // === API discovery endpoints ===

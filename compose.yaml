@@ -13,11 +13,6 @@ services:
     depends_on:
       - mongo
 
-  docs:
-    image: pundeepak/portfolio-docs:${IMAGE_TAG:-latest}
-    ports:
-      - "3002:80"
-
   mongo:
     image: mongo:latest
     command: ["--auth"]

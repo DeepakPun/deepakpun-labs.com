@@ -1,0 +1,88 @@
+{
+  "status": "healthy",
+  "timestamp": "2026-05-13T08:30:00.000Z",
+  "environment": "production",
+  "version": "2.1.0",
+  "uptime": "12d 4h 23m 11s",
+  "uptimeSeconds": 1051391,
+  "services": [
+    {
+      "name": "ui-service",
+      "displayName": "Client / Next.js",
+      "status": "healthy",
+      "version": "16.4.2",
+      "url": "https://yourdomain.com",
+      "uptime": "12d 4h 20m",
+      "latencyMs": 42,
+      "lastDeployedAt": "2026-05-10T14:22:00Z",
+      "lastCommit": "a1b2c3d - chore: next 16.4.2 + eslint 10",
+      "container": {
+        "id": "ui_abc123",
+        "image": "ghcr.io/jthapun/ui-service:2.1.0",
+        "restartCount": 0
+      }
+    },
+    {
+      "name": "api-service",
+      "displayName": "API / Express",
+      "status": "healthy",
+      "version": "2.1.0",
+      "url": "https://api.yourdomain.com/health",
+      "uptime": "12d 4h 23m",
+      "latencyMs": 18,
+      "lastDeployedAt": "2026-05-10T14:22:00Z",
+      "lastCommit": "a1b2c3d - fix: prod audit 0 vulns",
+      "database": {
+        "status": "connected",
+        "latencyMs": 6,
+        "type": "mongodb"
+      },
+      "container": {
+        "id": "api_xyz789",
+        "image": "ghcr.io/jthapun/api-service:2.1.0",
+        "restartCount": 0
+      }
+    }
+  ],
+  "infrastructure": {
+    "droplet": {
+      "region": "nyc1",
+      "cpuUsagePercent": 12.4,
+      "memoryUsagePercent": 38.7,
+      "diskUsagePercent": 22.1,
+      "loadAverage": [0.12, 0.18, 0.21]
+    }
+  },
+  "pipelines": [
+    {
+      "id": "deploy-142",
+      "service": "ui-service",
+      "status": "SUCCESS",
+      "duration": "1m 42s",
+      "triggeredBy": "push to main",
+      "finishedAt": "2026-05-10T14:23:15Z"
+    },
+    {
+      "id": "deploy-141",
+      "service": "api-service",
+      "status": "SUCCESS",
+      "duration": "1m 18s",
+      "triggeredBy": "push to main",
+      "finishedAt": "2026-05-10T14:22:50Z"
+    },
+    {
+      "id": "deploy-140",
+      "service": "ui-service",
+      "status": "FAILED",
+      "duration": "0m 54s",
+      "triggeredBy": "push to main",
+      "error": "npm audit found 14 vulns",
+      "finishedAt": "2026-05-09T09:11:00Z"
+    }
+  ],
+  "checks": {
+    "apiKeyAuth": "enabled",
+    "cors": "enabled",
+    "rateLimit": "100 req/min"
+  }
+}

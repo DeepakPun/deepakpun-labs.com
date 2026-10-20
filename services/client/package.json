@@ -12,22 +12,35 @@
     "test:e2e:debug": "playwright test --debug"
   },
   "dependencies": {
-    "next": "16.2.6",
+    "@next/eslint-plugin-next": "^16.4.2",
+    "next": "^16.4.2",
     "react": "19.2.4",
-    "react-dom": "19.2.4"
+    "react-dom": "19.2.4",
+    "sharp": "^0.35.5"
   },
   "devDependencies": {
+    "@next/eslint-plugin-next": "^16.4.2",
     "@playwright/test": "^1.61.1",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "16.2.6",
+    "eslint": "^10.0.0",
+    "eslint-config-next": "^16.4.2",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
   "overrides": {
-    "postcss": "^8.5.10"
+    "braces": "^3.0.3",
+    "brace-expansion": "^2.0.2",
+    "fast-glob": {
+      "micromatch": "^4.0.8"
+    },
+    "micromatch": {
+      "braces": "^3.0.3"
+    },
+    "@next/eslint-plugin-next": {
+      "fast-glob": "^3.3.3"
+    }
   }
 }
