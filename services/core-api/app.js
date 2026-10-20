@@ -8,7 +8,6 @@ import YAML from "yaml"
 import theoryRoutes from "./routes/theoryRoutes.js"
 import { globalErrorHandler } from "./middleware/errorMiddleware.js"
 import sampledata from "./sampledata.json" with { type: "json" }
-import { timeStamp } from "console"
 
 const app = express()
 
