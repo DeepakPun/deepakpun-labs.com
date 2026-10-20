@@ -8,6 +8,7 @@ import YAML from "yaml"
 import theoryRoutes from "./routes/theoryRoutes.js"
 import { globalErrorHandler } from "./middleware/errorMiddleware.js"
 import sampledata from "./sampledata.json" with { type: "json" }
+import { timeStamp } from "console"
 
 const app = express()
 
@@ -70,18 +71,16 @@ app.get("/", (req, res) => {
 })
 
 // -- Health for dashboard
-app.get("/health", (req, res) => {
+const healthHandler = (req, res) => {
   res.status(200).json({
+    status: "ok",
     ...sampledata,
     timestamp: new Date().toISOString(),
-    uptimeSeconds: process.uptime(),
   })
-})
-
-app.get("/api/v1/health", (req, res) => {
-  // alias - same handler, good for API gateway checks
-  res.redirect(307, "/health")
-})
+}
+app.get("/health", healthHandler)
+app.get("/api/v1/health", healthHandler)
+app.get("/api/health", healthHandler)
 
 // === API discovery endpoints ===
 app.get("/api", (req, res) => {
