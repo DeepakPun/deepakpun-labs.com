@@ -86,7 +86,7 @@ export default function TheoriesList() {
   // Instead of printing the raw dynamic URL string which triggers the mismatch,
   // print a static system title or use an empty state indicator until loaded.
   return (
-    <main className="max-w-4xl mx-auto px-4 py-12 grow w-full space-y-8 bg-slate-950">
+    <div className="max-w-4xl mx-auto w-full flex-1 flex flex-col space-y-8">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-900 pb-6">
         <div className="space-y-1">
           <h2 className="text-2xl font-black uppercase tracking-wider text-white font-mono flex items-center gap-3">
@@ -121,23 +121,25 @@ export default function TheoriesList() {
       <DatabaseNotice />
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-32 space-y-4">
+        <div className="flex-1 flex flex-col items-center justify-center py-20 space-y-4 min-h-[40vh]">
           <div className="h-5 w-5 border-2 border-t-red-600 border-slate-800 rounded-full animate-spin" />
           <div className="text-slate-500 font-mono text-xs uppercase tracking-widest animate-pulse">
             Decrypting Replicated Multiverse Channels...
           </div>
         </div>
       ) : theories.length === 0 ? (
-        <div className="border border-dashed border-slate-800 rounded-xl p-16 text-center bg-slate-900/20 max-w-xl mx-auto shadow-2xl flex flex-col items-center justify-center gap-4">
-          <p className="text-slate-400 font-mono text-sm">
-            The database contains no loaded entries.
-          </p>
-          <Link
-            href="/theories/new"
-            className="inline-block text-xs text-white font-mono bg-red-600 hover:bg-red-700 border border-red-700 hover:border-red-600 px-6 py-3 rounded-lg transition-all shadow-lg shadow-red-950/50 font-bold uppercase tracking-wider"
-          >
-            ➕ Log First Core Entry
-          </Link>
+        <div className="flex-1 flex items-center justify-center min-h-[40vh]">
+          <div className="border border-dashed border-slate-800 rounded-xl p-10 md:p-12 text-center bg-slate-900/20 max-w-xl w-full shadow-2xl flex flex-col items-center justify-center gap-4">
+            <p className="text-slate-400 font-mono text-sm">
+              The database contains no loaded entries.
+            </p>
+            <Link
+              href="/theories/new"
+              className="inline-block text-xs text-white font-mono bg-red-600 hover:bg-red-700 border border-red-700 hover:border-red-600 px-6 py-3 rounded-lg transition-all shadow-lg shadow-red-950/50 font-bold uppercase tracking-wider"
+            >
+              ➕ Log First Core Entry
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="space-y-8">
@@ -186,7 +188,7 @@ export default function TheoriesList() {
           )}
         </div>
       )}
-    </main>
+    </div>
   )
 }
 

@@ -4,8 +4,8 @@ import TheoriesList from "@/components/TheoriesList"
 
 export default function TheoriesPage() {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col justify-between selection:bg-red-600 selection:text-white p-6 md:p-12">
-      <main className="grow">
+    <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-red-600 selection:text-white">
+      <main className="flex-1 w-full px-6 md:px-12 py-6 md:py-12 flex flex-col">
         <TheoriesList />
       </main>
     </div>
