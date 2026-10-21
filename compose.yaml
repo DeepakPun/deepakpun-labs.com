@@ -10,8 +10,11 @@ services:
       - "3001:3001"
     env_file:
       - .env
+    volumes:
+      - ./.env:/app/.env:ro
     depends_on:
-      - mongo
+      mongo:
+        condition: service_healthy
 
   mongo:
     image: mongo:latest
@@ -21,12 +24,14 @@ services:
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_ROOT_PASSWORD}
     expose:
       - "27017"
-    ulimits:
-      nofile:
-        soft: 64000
-        hard: 64000
     volumes:
       - mongo_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   nginx:
     image: nginx:alpine-slim
@@ -39,6 +44,7 @@ services:
       - /root/portfolio/certbot_www:/var/www/certbot:ro
     depends_on:
       - client
+      - core-api
 
 volumes:
   mongo_data:
