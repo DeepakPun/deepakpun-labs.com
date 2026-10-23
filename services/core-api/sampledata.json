@@ -11,14 +11,14 @@
       "displayName": "Client / Next.js",
       "status": "healthy",
       "version": "16.4.2",
-      "url": "https://yourdomain.com",
+      "url": "https://deepakpun-labs.com",
       "uptime": "12d 4h 20m",
       "latencyMs": 42,
       "lastDeployedAt": "2026-05-10T14:22:00Z",
       "lastCommit": "a1b2c3d - chore: next 16.4.2 + eslint 10",
       "container": {
         "id": "ui_abc123",
-        "image": "ghcr.io/jthapun/ui-service:2.1.0",
+        "image": "https://hub.docker.com/repository/docker/pundeepak/portfolio-client/general",
         "restartCount": 0
       }
     },
@@ -27,7 +27,7 @@
       "displayName": "API / Express",
       "status": "healthy",
       "version": "2.1.0",
-      "url": "https://api.yourdomain.com/health",
+      "url": "https://deepakpun-labs.com/api-docs",
       "uptime": "12d 4h 23m",
       "latencyMs": 18,
       "lastDeployedAt": "2026-05-10T14:22:00Z",
@@ -39,7 +39,7 @@
       },
       "container": {
         "id": "api_xyz789",
-        "image": "ghcr.io/jthapun/api-service:2.1.0",
+        "image": "https://hub.docker.com/repository/docker/pundeepak/portfolio-core-api/general",
         "restartCount": 0
       }
     }

@@ -1,4 +1,4 @@
-ARG NODE_VERSION=24.11.1
+ARG NODE_VERSION=24.22.1
 
 # Stage 1: Dependency installer
 FROM node:${NODE_VERSION}-alpine AS deps
