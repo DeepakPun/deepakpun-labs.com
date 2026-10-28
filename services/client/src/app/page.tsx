@@ -55,10 +55,10 @@ export default function Home() {
                 directly from the core service datastore.
               </p>
             </div>
-            <div className="pt-2 relative z-10 w-full">
+            <div className="pt-2 relative z-20 w-full pointer-events-auto">
               <Link
                 href="/theories"
-                className="inline-block w-full bg-red-600 hover:bg-red-700 text-white font-mono font-bold text-sm uppercase px-6 py-4 rounded-xl tracking-wider transition-all shadow-lg shadow-red-900/30 text-center hover:scale-[1.01] active:scale-[0.99]"
+                className="inline-block w-full bg-red-600 hover:bg-red-700 text-white font-mono font-bold text-sm uppercase px-6 py-4 rounded-xl tracking-wider transition-all shadow-lg shadow-red-900/30 text-center"
               >
                 🔎 Enter Database Vault
               </Link>

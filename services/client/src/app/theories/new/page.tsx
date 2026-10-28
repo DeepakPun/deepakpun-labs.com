@@ -108,12 +108,10 @@ export default function NewTheoryPage() {
         }
 
         setErrors((prev) => [...prev, message])
-        setIsSubmitting(false) // Safe to turn off: we stayed on the page
+        setIsSubmitting(false)
         return
       }
 
-      // === SUCCESS PATH ===
-      // Force immediate router refresh, then route away
       router.refresh()
       router.push("/theories")
     } catch (error: unknown) {
@@ -122,15 +120,13 @@ export default function NewTheoryPage() {
         ...prev,
         "Network error. Check your connection and try again.",
       ])
-      setIsSubmitting(false) // Safe to turn off: we stayed on the page
+      setIsSubmitting(false)
     }
-    // REMOVED THE FINALLY BLOCK ENTIRELY
   }
 
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col items-center justify-center p-6 selection:bg-red-600 selection:text-white">
       <div className="w-full max-w-xl bg-slate-900 border border-slate-800 rounded-xl p-6 md:p-8 shadow-2xl">
-        {/* Header */}
         <div className="flex justify-between items-center border-b border-slate-800 pb-4 mb-6">
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-red-500">
@@ -148,7 +144,6 @@ export default function NewTheoryPage() {
           </Link>
         </div>
 
-        {/* Sandbox Public Notice Banner */}
         <div className="bg-amber-950/20 border border-amber-900/40 rounded-xl p-4 mb-6 text-xs font-mono text-amber-400 space-y-2 backdrop-blur-sm">
           <div className="flex items-center gap-2">
             <span className="h-2 w-2 rounded-full bg-amber-500 animate-pulse" />
@@ -160,14 +155,13 @@ export default function NewTheoryPage() {
             This endpoint requires authentication. Use the credential published
             on your Swagger UI docs to bypass the firewall rules:
           </p>
-          <div className="flex items-center gap-2 pt-1">
-            <code className="bg-slate-950 px-3 py-1.5 rounded text-slate-100 select-all border border-slate-800 font-bold block">
+          <div className="flex items-center gap-2 pt-1 min-w-0 w-full overflow-hidden">
+            <code className="block min-w-0 max-w-full w-full bg-slate-950 px-3 py-1.5 rounded text-slate-100 select-all border border-slate-800 font-bold break-all whitespace-pre-wrap wrap-anywhere text-xs sm:text-sm leading-relaxed">
               multiverse_labs_test_key_a1b2c3d4_e5f6g7h8_90abcdef
             </code>
           </div>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} noValidate className="space-y-5">
           {errors.length > 0 && (
             <div className="bg-red-950/30 border border-red-900/40 rounded-lg p-3 mb-4 text-sm">
@@ -185,8 +179,7 @@ export default function NewTheoryPage() {
             </div>
           )}
 
-          {/* API Key Input */}
-          <div>
+          <div className="min-w-0 w-full overflow-hidden">
             <label className="block text-xs uppercase font-semibold text-slate-400 mb-1.5 tracking-wider">
               x-api-key Gateway Credential
             </label>
@@ -196,7 +189,7 @@ export default function NewTheoryPage() {
               placeholder="Paste sample api key here..."
               value={userApiKey}
               onChange={(e) => setUserApiKey(e.target.value)}
-              className="w-full bg-slate-950 border border-amber-900/30 rounded-lg px-3 py-2 text-sm text-amber-400 font-mono focus:outline-none focus:border-amber-500 disabled:opacity-50 tracking-wide"
+              className="w-full min-w-0 max-w-full bg-slate-950 border border-amber-900/30 rounded-lg px-3 py-2 text-sm text-amber-400 font-mono focus:outline-none focus:border-amber-500 disabled:opacity-50 tracking-wide truncate"
             />
           </div>
 
