@@ -10,6 +10,7 @@ RUN npm ci
 # Stage 2: Application builder
 FROM node:${NODE_VERSION}-alpine AS builder
 WORKDIR /app
+RUN npm install -g npm@latest
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1

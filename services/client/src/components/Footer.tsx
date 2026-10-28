@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="mt-auto sticky top- border-t border-slate-900 bg-slate-950 py-8">
       <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6 text-xs font-mono text-slate-500">
         <div className="flex flex-col gap-1 text-center md:text-left">
-          <p>
+          <p suppressHydrationWarning>
             © {new Date().getFullYear()} deepakpun-labs.com. All variants
             reserved.
           </p>
