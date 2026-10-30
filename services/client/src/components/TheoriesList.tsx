@@ -151,7 +151,7 @@ export default function TheoriesList() {
         <div className="flex-1 min-h-0 overflow-y-auto pt-6">
           <div className="space-y-6">
             <div className="flex justify-end">
-              <span className="bg-slate-900/80 text-slate-500 font-mono text-sm uppercase tracking-widest px-3 py-1 rounded-md border border-slate-900">
+              <span className="bg-slate-900/80 text-slate-500 font-mono text-xs uppercase tracking-widest px-3 py-1 rounded-md border border-slate-900">
                 Page Logs: {(page - 1) * ITEMS_PER_PAGE + 1} -{" "}
                 {Math.min(page * ITEMS_PER_PAGE, pagination?.totalItems || 0)}{" "}
                 of {pagination?.totalItems} Items

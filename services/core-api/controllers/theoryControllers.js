@@ -1,6 +1,6 @@
-import Theory from '../models/Theory.js'
-import { catchAsync } from '../middleware/catchAsync.js'
-import ErrorHandler from '../utils/ErrorHandler.js'
+import Theory from "../models/Theory.js"
+import { catchAsync } from "../middleware/catchAsync.js"
+import ErrorHandler from "../utils/ErrorHandler.js"
 
 // @desc Get all theories from the database
 // @route GET /api/v1/theories
@@ -8,7 +8,7 @@ import ErrorHandler from '../utils/ErrorHandler.js'
 const getAllTheories = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1
-    const limit = parseInt(req.query.limit) || 10
+    const limit = parseInt(req.query.limit) || 3
     const skip = (page - 1) * limit
 
     const [theories, totalItems] = await Promise.all([
@@ -21,7 +21,7 @@ const getAllTheories = async (req, res) => {
     return res.status(200).json({
       success: true,
       statusCode: res.statusCode,
-      message: 'Theories retrieved successfully.',
+      message: "Theories retrieved successfully.",
       pagination: {
         totalItems,
         totalPages,
@@ -36,7 +36,7 @@ const getAllTheories = async (req, res) => {
     return res.status(500).json({
       success: false,
       statusCode: 500,
-      message: 'Failed to retrieve theories.',
+      message: "Failed to retrieve theories.",
       error: error.message,
     })
   }
@@ -51,7 +51,7 @@ const getSingleTheoryById = catchAsync(async (req, res, next) => {
   if (!theory) {
     return next(
       new ErrorHandler(
-        'No intelligence log found matching that registry coordinate.',
+        "No intelligence log found matching that registry coordinate.",
         404,
       ),
     )
@@ -121,7 +121,7 @@ const updateTheory = async (req, res) => {
       return res.status(404).json({
         success: false,
         statusCode: 404,
-        message: 'Theory document not found.',
+        message: "Theory document not found.",
       })
     }
 
@@ -148,14 +148,14 @@ const deleteTheory = async (req, res) => {
         theory_id: theoryId,
         success: false,
         statusCode: 404,
-        message: 'Theory document not found.',
+        message: "Theory document not found.",
       })
     }
 
     return res.status(200).json({
       success: true,
       statusCode: 200,
-      message: 'Theory pruned successfully.',
+      message: "Theory pruned successfully.",
     })
   } catch (error) {
     return res

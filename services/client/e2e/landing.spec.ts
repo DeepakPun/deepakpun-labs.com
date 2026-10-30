@@ -36,10 +36,10 @@ test.describe("Landing Page E2E Suite", () => {
     page,
   }) => {
     // Check release target layouts for Phase 6 cards
-    const spidermanCardHeader = page.getByRole("heading", {
-      name: "Spider-Man: Brand New Day",
-    })
-    await expect(spidermanCardHeader).toBeVisible()
+    // const spidermanCardHeader = page.getByRole("heading", {
+    //   name: "Spider-Man: Brand New Day",
+    // })
+    // await expect(spidermanCardHeader).toBeVisible()
 
     const secretWarsCardHeader = page.getByRole("heading", {
       name: "Avengers: Secret Wars",

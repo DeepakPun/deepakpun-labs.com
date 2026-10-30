@@ -1,0 +1,47 @@
+name: Client E2E Tests
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "services/client/**" # Trigger on client service changes only
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "services/client/**"
+
+jobs:
+  playwright-e2e:
+    timeout-minutes: 30
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: services/client
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+          cache: "npm"
+          cache-dependency-path: services/client/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
+      - name: Run Playwright tests
+        run: npm run test:e2e
+
+      - name: Upload Test Report
+        uses: actions/upload-artifact@v4
+        if: ${{ !cancelled() }}
+        with:
+          name: client-playwright-report
+          path: services/client/playwright-report/
+          retention-days: 14
