@@ -1,0 +1,41 @@
+name: Scheduled DevSecOps Security Audit
+
+on:
+  schedule:
+    # Runs every Monday at 08:00 UTC
+    - cron: "0 8 * * 1"
+  workflow_dispatch: # Allows manual trigger from GitHub UI
+
+jobs:
+  security-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Scan Repo for Hardcoded Secrets & Misconfigs
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: "fs"
+          scan-ref: "."
+          format: "table"
+          exit-code: "1"
+          severity: "CRITICAL,HIGH"
+
+      - name: Audit Production Client Image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "${{ secrets.DOCKERHUB_USERNAME }}/portfolio-client:latest"
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: "CRITICAL,HIGH"
+
+      - name: Audit Production Core API Image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: "${{ secrets.DOCKERHUB_USERNAME }}/portfolio-core-api:latest"
+          format: "table"
+          exit-code: "1"
+          ignore-unfixed: true
+          severity: "CRITICAL,HIGH"
