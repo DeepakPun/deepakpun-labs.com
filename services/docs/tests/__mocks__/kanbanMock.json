@@ -1,4 +1,0 @@
-{
-  "controlPlane": { "queued": [], "executing": [], "stable": [] },
-  "edgeLayer": { "queued": [], "executing": [], "stable": [] }
-}
