@@ -42,7 +42,7 @@ jobs:
         with:
           image-ref: "${{ secrets.DOCKERHUB_USERNAME }}/portfolio-client:sha-${{ github.sha }}"
           format: "table"
-          exit-code: "0" # Change to '1' once you verify zero CRITICAL/HIGH CVEs
+          exit-code: "1" # Change to '1' once you verify zero CRITICAL/HIGH CVEs
           ignore-unfixed: true
           vuln-type: "os,library"
           severity: "CRITICAL,HIGH"
