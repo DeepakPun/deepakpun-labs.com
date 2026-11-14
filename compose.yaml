@@ -89,6 +89,6 @@ volumes:
   prometheus_data:
   grafana_data:
 
-networks:
-  default:
-    name: deepakpun-labs-network
+# networks:
+#   default:
+#     name: deepakpun-labs-network
