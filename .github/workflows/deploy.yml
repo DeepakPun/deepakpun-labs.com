@@ -42,7 +42,7 @@ jobs:
         with:
           image-ref: "${{ secrets.DOCKERHUB_USERNAME }}/portfolio-client:sha-${{ github.sha }}"
           format: "table"
-          exit-code: "1" # Change to '1' once you verify zero CRITICAL/HIGH CVEs
+          exit-code: "1"
           ignore-unfixed: true
           vuln-type: "os,library"
           severity: "CRITICAL,HIGH"
@@ -52,7 +52,7 @@ jobs:
         with:
           image-ref: "${{ secrets.DOCKERHUB_USERNAME }}/portfolio-core-api:sha-${{ github.sha }}"
           format: "table"
-          exit-code: "0" # Change to '1' once you verify zero CRITICAL/HIGH CVEs
+          exit-code: "0"
           ignore-unfixed: true
           vuln-type: "os,library"
           severity: "CRITICAL,HIGH"
@@ -71,7 +71,7 @@ jobs:
           host: ${{ secrets.DROPLET_IP }}
           username: root
           key: ${{ secrets.DROPLET_SSH_KEY }}
-          source: "compose.yaml,run.sh,nginx.conf,.env,.github/scripts/maintenance.sh"
+          source: "compose.yaml,prometheus.yml,run.sh,nginx.conf,.env,.github/scripts/maintenance.sh"
           target: "/root/portfolio"
 
       - name: Deploy
