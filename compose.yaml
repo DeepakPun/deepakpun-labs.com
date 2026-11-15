@@ -111,6 +111,8 @@ services:
       - ./loki-config.yml:/etc/loki/local-config.yaml:ro
       - loki_data:/loki
     command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - deepakpun-labs-network
 
   promtail:
     image: grafana/promtail:3.0.0
@@ -123,6 +125,8 @@ services:
     command: -config.file=/etc/promtail/config.yml
     depends_on:
       - loki
+    networks:
+      - deepakpun-labs-network
 
 volumes:
   mongo_data:
