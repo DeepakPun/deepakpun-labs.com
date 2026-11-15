@@ -71,8 +71,9 @@ jobs:
           host: ${{ secrets.DROPLET_IP }}
           username: root
           key: ${{ secrets.DROPLET_SSH_KEY }}
-          source: "compose.yaml,prometheus.yml,run.sh,nginx.conf,.env,.github/scripts/maintenance.sh"
+          source: "compose.yaml,prometheus.yml,blackbox.yml,run.sh,nginx.conf,.env,.github/scripts/maintenance.sh"
           target: "/root/portfolio"
+          overwrite: true
 
       - name: Deploy
         uses: appleboy/ssh-action@v1.2.0
