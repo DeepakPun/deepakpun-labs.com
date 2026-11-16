@@ -16,8 +16,7 @@ const allowedOrigins = [
   "http://localhost:3001",
   "http://localhost:5173",
   "http://localhost",
-  "https://deepakpun-labs.com",
-  "https://www.deepakpun-labs.com",
+  "https://deepakpun.com",
 ]
 
 const corsOptions = {

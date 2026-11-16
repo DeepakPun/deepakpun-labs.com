@@ -6,7 +6,7 @@ export default function Footer() {
       <div className="max-w-6xl mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6 text-xs font-mono text-slate-500">
         <div className="flex flex-col gap-1 text-center md:text-left">
           <p suppressHydrationWarning>
-            © {new Date().getFullYear()} deepakpun-labs.com. All variants
+            © {new Date().getFullYear()} labs.deepakpun.com. All variants
             reserved.
           </p>
           <p className="text- text-slate-600 tracking-wide">
