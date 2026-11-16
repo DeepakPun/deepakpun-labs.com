@@ -14,8 +14,8 @@ info:
 
 servers:
   [
-    { url: 'https://deepakpun-labs.com', description: 'Production Server' },
-    { url: 'http://localhost:3001', description: 'Local Development Server' },
+    { url: "https://labs.deepakpun.com", description: "Production Server" },
+    { url: "http://localhost:3001", description: "Local Development Server" },
   ]
 
 components:
@@ -60,7 +60,7 @@ components:
         theories:
           type: array
           items:
-            $ref: '#/components/schemas/Theory'
+            $ref: "#/components/schemas/Theory"
     ErrorResponse:
       type: object
       properties:
@@ -81,7 +81,7 @@ paths:
       operationId: getRoot
       security: []
       responses:
-        '200':
+        "200":
           description: Successful response
           content:
             application/json:
@@ -112,13 +112,13 @@ paths:
             default: 10
           description: Total records to return per page view
       responses:
-        '200':
+        "200":
           description: Theories retrieved successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TheoryListResponse'
-        '500':
+                $ref: "#/components/schemas/TheoryListResponse"
+        "500":
           description: Internal datastore error.
     post:
       tags: [Theories]
@@ -137,34 +137,34 @@ paths:
               properties:
                 title:
                   type: string
-                  example: 'Doom is not Stark.'
+                  example: "Doom is not Stark."
                 targetMovie:
                   type: string
-                  example: 'Avengers: Doomsday'
+                  example: "Avengers: Doomsday"
                 relatedPastMovies:
                   type: array
                   items:
                     type: string
-                  example: ['Avengers: Endgame', 'Fantastic Four: First Steps']
+                  example: ["Avengers: Endgame", "Fantastic Four: First Steps"]
                 content:
                   type: string
-                  example: 'Doom shares looks with Tony Stark but is not him nor his variants. He might use the Stark look to his advantage.'
+                  example: "Doom shares looks with Tony Stark but is not him nor his variants. He might use the Stark look to his advantage."
                 predictionConfidence:
                   type: integer
                   default: 5
                   example: 8
       responses:
-        '201':
+        "201":
           description: Theory created successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Theory'
-        '400':
+                $ref: "#/components/schemas/Theory"
+        "400":
           description: Validation input error.
-        '401':
+        "401":
           description: Missing or invalid x-api-key
-        '409':
+        "409":
           description: Duplicate theory
 
   /api/v1/theories/{theoryId}:
@@ -182,15 +182,15 @@ paths:
             type: string
           description: The unique hex string ID of the targeted theory record
       responses:
-        '200':
+        "200":
           description: Theory document found and retrieved successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Theory'
-        '404':
+                $ref: "#/components/schemas/Theory"
+        "404":
           description: No document found matching the provided ID
-        '500':
+        "500":
           description: Internal backend error
     put:
       tags: [Theories]
@@ -219,15 +219,15 @@ paths:
                 content: { type: string }
                 predictionConfidence: { type: integer }
       responses:
-        '200':
+        "200":
           description: Theory modified successfully.
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Theory'
-        '400': { description: Validation error }
-        '401': { description: Missing or invalid x-api-key }
-        '404': { description: Log target not found }
+                $ref: "#/components/schemas/Theory"
+        "400": { description: Validation error }
+        "401": { description: Missing or invalid x-api-key }
+        "404": { description: Log target not found }
     delete:
       tags: [Theories]
       summary: Prune a theory item from the active database
@@ -241,11 +241,11 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Theory successfully pruned from timeline.
-        '401': { description: Missing or invalid x-api-key }
-        '404': { description: Log target not found }
-        '500': { description: Internal server error }
+        "401": { description: Missing or invalid x-api-key }
+        "404": { description: Log target not found }
+        "500": { description: Internal server error }
 # openapi: 3.0.0
 # info:
 #   title: MCU Multiverse Labs API (Development Hub)
