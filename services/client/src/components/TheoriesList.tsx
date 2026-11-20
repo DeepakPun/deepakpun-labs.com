@@ -35,7 +35,6 @@ export default function TheoriesList() {
     ApiResponse["pagination"] | null
   >(null)
 
-  // Start loading as true so both server and client render the loading placeholder first
   const [loading, setLoading] = useState<boolean>(true)
   const ITEMS_PER_PAGE = 2
 
@@ -43,10 +42,8 @@ export default function TheoriesList() {
     const controller = new AbortController()
     const signal = controller.signal
 
-    // Set loading to true when changing pages to show structural placeholder gracefully
     setLoading(true)
 
-    // Note: useEffect ONLY runs in the browser. You do not need 'typeof window' checks here.
     fetch(`/api/v1/theories?page=${page}&limit=${ITEMS_PER_PAGE}`, {
       signal,
       headers: {
