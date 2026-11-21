@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@next/eslint-plugin-next": "^16.4.2",
-    "next": "^16.4.2",
+    "next": "^16.4.5",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "sharp": "^0.35.5"
@@ -26,7 +26,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^10.0.0",
-    "eslint-config-next": "^16.4.2",
+    "eslint-config-next": "^16.4.5",
     "tailwindcss": "^4",
     "typescript": "^5"
   },
